@@ -12,4 +12,5 @@ public final class TapLinkAppConstants {
     public static final String UNAUTHORIZED = "Unauthorized";
     public static final String FORBIDDEN = "Forbidden";
     public static final String INTERNAL_SERVER = "Internal Server Error";
+    public static final String TAP_LINK_SYS = "Tap Link System";
 }

@@ -4,6 +4,8 @@ import org.co.taplink.users.entities.Users;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import static org.co.taplink.users.utils.TapLinkAppConstants.TAP_LINK_SYS;
+
 public class SecurityUtils {
 
     public static Users getCurrentUser() {
@@ -16,9 +18,9 @@ public class SecurityUtils {
 
     public static String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
+        if (authentication != null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
             return authentication.getName(); // Returns the username string
         }
-        return "TAP_LINK_SYSTEM";
+        return TAP_LINK_SYS;
     }
 }
