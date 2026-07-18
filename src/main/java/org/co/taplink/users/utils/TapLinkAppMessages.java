@@ -32,4 +32,8 @@ public final class TapLinkAppMessages {
         public static final String DELETED = "Link with ID %d was deleted successfully.";
         public static final String SUSPENDED = "Link with ID %d has been temporarily suspended.";
     }
+
+    public static final class Common {
+        public static final String INTERACTIVE_API = "Interactive API testing interface for the Taplink platform.";
+    }
 }

@@ -13,4 +13,8 @@ public final class TapLinkAppConstants {
     public static final String FORBIDDEN = "Forbidden";
     public static final String INTERNAL_SERVER = "Internal Server Error";
     public static final String TAP_LINK_SYS = "Tap Link System";
+    public static final String TAPLINK_API_DOCUMENTATION = "Taplink API Documentation";
+    public static final String VER_1_0 = "1.0";
+    public static final String JWT = "JWT";
+    public static final String BEARER_AUTH = "bearerAuth";
 }
