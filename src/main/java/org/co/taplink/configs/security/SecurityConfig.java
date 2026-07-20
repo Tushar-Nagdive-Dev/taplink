@@ -41,7 +41,10 @@ public class SecurityConfig {
                                 SWAGGER_HTML_PATH + FORWARD_SLASH + MATCH_ALL,
                                 V3_API_DOCS_PATH).permitAll()
                         .requestMatchers(ADMIN_PATH + FORWARD_SLASH + MATCH_ALL).hasRole(ADMIN)
-                        .requestMatchers(PREMIUM_USER_PATH + FORWARD_SLASH + MATCH_ALL).hasAnyRole(USER, PREMIUM)
+                        .requestMatchers(
+                                PREMIUM_USER_PATH + FORWARD_SLASH + MATCH_ALL,
+                                QR_BARCODE_PATH + FORWARD_SLASH + MATCH_ALL)
+                        .hasAnyRole(USER, PREMIUM)
                         .requestMatchers(LINKS_PATH + FORWARD_SLASH + MATCH_ALL).hasAnyRole(USER, ADMIN)
                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -37,4 +37,11 @@ public final class TapLinkAppMessages {
     public static final class Common {
         public static final String INTERACTIVE_API = "Interactive API testing interface for the Taplink platform.";
     }
+
+    public static final class QrBarcodes {
+        public static final String QA_BARCODE_DISABLED = "QR/Barcode generation is disabled for this link.";
+        public static final String FAILED_QA_BARCODE_GENERATION = "Failed to generate code image for URL: {}";
+        public static final String FAILED_LOGO_LOAD = "Failed to load logo from URL: {}. Returning base QR code.";
+        public static final String LINK_NOT_FOUND = "Link not found with ID: ";
+    }
 }
