@@ -22,7 +22,7 @@ public class ShortCodeGeneratorServiceImpl implements ShortCodeGeneratorService 
         String code;
         do {
             code = generateRandomString(DEFAULT_CODE_LENGTH);
-        }while (this.linkRoutingRepository.existByShortCode(code));
+        }while (this.linkRoutingRepository.existsByShortCode(code));
         return code;
     }
 

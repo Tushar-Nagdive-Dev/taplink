@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface LinkRoutingRepository extends JpaRepository<@NonNull LinkRouting,@NonNull Long> {
 
-    Boolean existByShortCode(@NonNull String shortCode);
+    Boolean existsByShortCode(String shortCode);
 
     Optional<LinkRouting> findByShortCode(String shortCode);
 }
