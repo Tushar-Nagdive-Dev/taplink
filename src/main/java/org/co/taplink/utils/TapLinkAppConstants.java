@@ -26,6 +26,8 @@ public final class TapLinkAppConstants {
         public static final String USER = "USER";
     }
 
+    public static final String ALLOWED_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static final int DEFAULT_CODE_LENGTH = 6;
     public static final String ROLE_USER = "ROLE_USER";
     public static final String BEARER = "Bearer";
     public static final String AUTHORIZED = "Authorized";
