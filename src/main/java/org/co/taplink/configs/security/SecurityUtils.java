@@ -4,7 +4,7 @@ import org.co.taplink.users.entities.Users;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import static org.co.taplink.users.utils.TapLinkAppConstants.TAP_LINK_SYS;
+import static org.co.taplink.utils.TapLinkAppConstants.TAP_LINK_SYS;
 
 public class SecurityUtils {
 

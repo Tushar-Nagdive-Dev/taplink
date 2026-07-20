@@ -8,8 +8,8 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.co.taplink.users.utils.TapLinkAppConstants.*;
-import static org.co.taplink.users.utils.TapLinkAppMessages.Common.INTERACTIVE_API;
+import static org.co.taplink.utils.TapLinkAppConstants.*;
+import static org.co.taplink.utils.TapLinkAppMessages.Common.INTERACTIVE_API;
 
 @Configuration
 public class SwaggerConfig {

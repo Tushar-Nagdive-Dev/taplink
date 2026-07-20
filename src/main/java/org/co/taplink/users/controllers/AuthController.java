@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.co.taplink.utils.TapLinkAppConstants.API_PATHS.AUTH_PATH;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/auth")
+@RequestMapping(AUTH_PATH)
 public class AuthController {
 
     private final AuthService authService;

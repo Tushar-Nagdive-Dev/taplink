@@ -15,6 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.co.taplink.utils.TapLinkAppConstants.API_PATHS.*;
+import static org.co.taplink.utils.TapLinkAppConstants.FORWARD_SLASH;
+import static org.co.taplink.utils.TapLinkAppConstants.MATCH_ALL;
+import static org.co.taplink.utils.TapLinkAppConstants.ROLES.*;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -31,12 +36,13 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/premium/**").hasAnyRole("USER", "PREMIUM")
+                                AUTH_PATH + FORWARD_SLASH + MATCH_ALL,
+                                SWAGGER_UI_PATH + FORWARD_SLASH + MATCH_ALL,
+                                SWAGGER_HTML_PATH + FORWARD_SLASH + MATCH_ALL,
+                                V3_API_DOCS_PATH).permitAll()
+                        .requestMatchers(ADMIN_PATH + FORWARD_SLASH + MATCH_ALL).hasRole(ADMIN)
+                        .requestMatchers(PREMIUM_USER_PATH + FORWARD_SLASH + MATCH_ALL).hasAnyRole(USER, PREMIUM)
+                        .requestMatchers(LINKS_PATH + FORWARD_SLASH + MATCH_ALL).hasAnyRole(USER, ADMIN)
                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

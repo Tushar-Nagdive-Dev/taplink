@@ -1,4 +1,4 @@
-package org.co.taplink.users.utils;
+package org.co.taplink.utils;
 
 public final class TapLinkAppMessages {
     private TapLinkAppMessages() {
@@ -31,6 +31,7 @@ public final class TapLinkAppMessages {
         public static final String CREATED = "Link for URL '%s' saved successfully.";
         public static final String DELETED = "Link with ID %d was deleted successfully.";
         public static final String SUSPENDED = "Link with ID %d has been temporarily suspended.";
+        public static final String USER_NOT_FOUND = "The User with username %s could not be found.";
     }
 
     public static final class Common {

@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.nio.file.AccessDeniedException;
 
-import static org.co.taplink.users.utils.TapLinkAppConstants.*;
-import static org.co.taplink.users.utils.TapLinkAppMessages.Error.*;
+import static org.co.taplink.utils.TapLinkAppConstants.*;
+import static org.co.taplink.utils.TapLinkAppMessages.Error.*;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
