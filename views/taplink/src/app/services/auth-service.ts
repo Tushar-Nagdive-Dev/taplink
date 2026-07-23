@@ -11,20 +11,14 @@ export class AuthService {
   apiClient = inject(ApiClientService);
 
   register(request: IRegisterRequest): Observable<IAuthResponse> {
-    return this.apiClient.post<IAuthResponse>(APIs.AUTH.REGISTER, request, {
-      withCredentials: true
-    });
+    return this.apiClient.post<IAuthResponse>(APIs.AUTH.REGISTER, request);
   }
 
   login(request: ILoginRequest): Observable<IAuthResponse> {
-    return this.apiClient.post<IAuthResponse>(APIs.AUTH.LOGIN, request, {
-      withCredentials: true
-    })
+    return this.apiClient.post<IAuthResponse>(APIs.AUTH.LOGIN, request)
   }
 
   logout(): Observable<any> {
-    return this.apiClient.post<any>(APIs.AUTH.LOGOUT, {}, {
-      withCredentials: true
-    });
+    return this.apiClient.post<any>(APIs.AUTH.LOGOUT, {});
   }
 }
