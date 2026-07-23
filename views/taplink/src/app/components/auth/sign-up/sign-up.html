@@ -1,0 +1,35 @@
+<div class="auth-view fade-in-up">
+  <h2 class="view-title">Create Account</h2>
+  <p class="view-subtitle">Start organizing your digital presence today.</p>
+
+  <form class="macos-form" [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+    
+    <div class="input-row">
+      <div class="input-group">
+        <input type="text" formControlName="firstName" class="macos-input" placeholder="First Name">
+      </div>
+      <div class="input-group">
+        <input type="text" formControlName="lastName" class="macos-input" placeholder="Last Name">
+      </div>
+    </div>
+
+    <div class="input-group">
+      <input type="text" formControlName="username" class="macos-input" placeholder="Username (e.g. tap.link/you)">
+    </div>
+
+    <div class="input-group">
+      <input type="email" formControlName="email" class="macos-input" placeholder="Email Address">
+    </div>
+    
+    <div class="input-group">
+      <input type="password" formControlName="password" class="macos-input" placeholder="Create Password">
+    </div>
+
+    <button type="submit" class="macos-btn primary" [disabled]="signUpForm.invalid">Sign Up</button>
+  </form>
+
+  <div class="auth-footer">
+    <span>Already have an account?</span>
+    <a routerLink="/signin" class="macos-link highlight">Sign In</a>
+  </div>
+</div>
