@@ -1,5 +1,6 @@
 package org.co.taplink.users.services.impl;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.co.taplink.configs.jwt.JwtService;
 import org.co.taplink.users.entities.Roles;
@@ -10,6 +11,9 @@ import org.co.taplink.users.modals.RegisterRequest;
 import org.co.taplink.users.repository.RolesRepository;
 import org.co.taplink.users.repository.UsersRepository;
 import org.co.taplink.users.services.AuthService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public AuthResponse register(RegisterRequest request) {
+    public ResponseEntity<@NonNull AuthResponse> register(RegisterRequest request) {
         if(this.usersRepository.existsByUsername(request.username())){
             throw new IllegalArgumentException(String.format(USERNAME_TAKEN, request.username()));
         }
@@ -47,14 +51,26 @@ public class AuthServiceImpl implements AuthService {
         this.usersRepository.save(user);
 
         String jwtToken = jwtService.generateToken(user);
-        return new AuthResponse(jwtToken, BEARER);
+        ResponseCookie jwtCookie = ResponseCookie.from("taplink_token", jwtToken).httpOnly(true)
+                .secure(false) //Set to TRUE in production when you have HTTPS!
+                .path("/").maxAge(7 * 24 * 60 * 60) // Expires in 7 days
+                .sameSite("Strict").build(); // Protects against Cross-Site Request Forgery (CSRF)
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(new AuthResponse("Registration successful"));
     }
 
     @Override
-    public AuthResponse login(LoginRequest request) {
+    public ResponseEntity<@NonNull AuthResponse> login(LoginRequest request) {
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         Users user = this.usersRepository.findByUsernameWithRoles(request.username()).orElseThrow(() -> new IllegalArgumentException(INVALID_USER));
         String jwtToken = jwtService.generateToken(user);
-        return new AuthResponse(jwtToken, BEARER);
+        ResponseCookie jwtCookie = ResponseCookie.from("taplink_token", jwtToken).httpOnly(true)
+                .secure(false) //Set to TRUE in production when you have HTTPS!
+                .path("/").maxAge(7 * 24 * 60 * 60) // Expires in 7 days
+                .sameSite("Strict").build(); // Protects against Cross-Site Request Forgery (CSRF)
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(new AuthResponse("Login successful"));
     }
 }
