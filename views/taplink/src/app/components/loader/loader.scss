@@ -1,0 +1,95 @@
+$font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+.loader-overlay {
+  position: absolute; /* Change to fixed if you want it to cover the whole screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* Soft background fade */
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Fade in animation */
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.loader-glass-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 48px;
+
+  /* The Glassmorphism Effect */
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08),
+  inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.spinner-container {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gradient-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+
+  /* A beautiful Apple-style gradient border */
+  background: conic-gradient(from 0deg, transparent 0%, transparent 30%, #007aff 100%);
+
+  /* Masking the center out so it becomes a ring */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #fff calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #fff calc(100% - 3px));
+
+  animation: spin 1s linear infinite;
+}
+
+.brand-center {
+  position: absolute;
+  font-size: 24px;
+
+  /* Gentle pulsing effect for the icon */
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-text {
+  font-family: $font-stack;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d1d1f;
+  letter-spacing: -0.2px;
+}
+
+/* Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

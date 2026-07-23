@@ -7,23 +7,24 @@ import {HttpClient} from '@angular/common/http';
 export class ApiClientService {
   constructor(private http: HttpClient) {}
 
-  get<T>(url: string) {
-    return this.http.get<T>(url);
+  // Added options?: any to allow passing HTTP headers or credential flags
+  get<T>(url: string, options?: any) {
+    return this.http.get<T>(url, options);
   }
 
-  post<T>(url: string, body: unknown) {
-    return this.http.post<T>(url, body);
+  post<T>(url: string, body: unknown, options?: any) {
+    return this.http.post<T>(url, body, options);
   }
 
-  put<T>(url: string, body: unknown) {
-    return this.http.put<T>(url, body);
+  put<T>(url: string, body: unknown, options?: any) {
+    return this.http.put<T>(url, body, options);
   }
 
-  patch<T>(url: string, body: unknown) {
-    return this.http.patch<T>(url, body);
+  patch<T>(url: string, body: unknown, options?: any) {
+    return this.http.patch<T>(url, body, options);
   }
 
-  delete<T>(url: string) {
-    return this.http.delete<T>(url);
+  delete<T>(url: string, options?: any) {
+    return this.http.delete<T>(url, options);
   }
 }
