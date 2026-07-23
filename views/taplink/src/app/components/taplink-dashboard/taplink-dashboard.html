@@ -1,0 +1,42 @@
+<div class="dashboard-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-icon">🔗</span>
+        <span class="brand-text">Taplink</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a *ngFor="let item of menuItems"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         class="nav-item">
+        <span class="icon">{{ item.icon }}</span>
+        <span class="label">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item logout-btn" (click)="logout()">
+        <span class="icon">🚪</span>
+        <span class="label">Log Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="content-header">
+      <div class="header-actions">
+        <div class="user-avatar">U</div>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+
+  </main>
+</div>
