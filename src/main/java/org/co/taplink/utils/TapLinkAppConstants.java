@@ -1,9 +1,5 @@
 package org.co.taplink.utils;
 
-import com.beust.jcommander.internal.Maps;
-
-import java.util.Map;
-
 public final class TapLinkAppConstants {
 
     private TapLinkAppConstants() {
@@ -51,14 +47,12 @@ public final class TapLinkAppConstants {
     };
 
 
-    public static final String UNKNOWN_OS = "Unknown OS";
     public static final String USER_AGENT = "User-Agent";
     public static final String UNKNOWN = "unknown";
     public static final String ALLOWED_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static final int DEFAULT_CODE_LENGTH = 6;
     public static final String ROLE_USER = "ROLE_USER";
     public static final String BEARER = "Bearer";
-    public static final String AUTHORIZED = "Authorized";
     public static final String UNAUTHORIZED = "Unauthorized";
     public static final String FORBIDDEN = "Forbidden";
     public static final String INTERNAL_SERVER = "Internal Server Error";

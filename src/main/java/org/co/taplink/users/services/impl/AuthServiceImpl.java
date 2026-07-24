@@ -23,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.co.taplink.utils.TapLinkAppConstants.BEARER;
 import static org.co.taplink.utils.TapLinkAppConstants.ROLE_USER;
 import static org.co.taplink.utils.TapLinkAppMessages.Auth.*;
 
