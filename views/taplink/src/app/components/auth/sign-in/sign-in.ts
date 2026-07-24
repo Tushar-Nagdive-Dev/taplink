@@ -6,6 +6,9 @@ import {Router, RouterLink} from '@angular/router';
 import {ILoginRequest} from '../../../interfaces/auth.interface';
 import {AuthService} from '../../../services/auth-service';
 import {Loader} from '../../loader/loader';
+import {ToastService} from '../../../services/toast-service';
+import {AppConstants} from '../../../constants/app.constants';
+import {Toast} from '../../toast/toast';
 
 @Component({
   selector: 'app-sign-in',
@@ -26,7 +29,8 @@ export class SignIn implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -52,16 +56,16 @@ export class SignIn implements OnInit {
 
     this.authService.login(requestPayload).subscribe({
       next: (response) => {
-        console.log('Login successful:', response.authMessage);
         this.isLoading = false;
-
+        this.authService.setLocalState();
         // Secure HttpOnly cookie is set! Send them to the dashboard.
-        this.router.navigate(['/dashboard']);
+        this.toastService.show(AppConstants.LOGIN_SUCCESSFUL, AppConstants.TOAST_TYPE.SUCCESS);
+        this.router.navigate(['/taplink-dashboard']);
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('Login failed:', err);
-        this.errorMessage = err.error?.message || 'Invalid username or password.';
+        this.toastService.show(AppConstants.CHECK_USERNAME_AND_PASSWORD, AppConstants.TOAST_TYPE.ERROR);
+        this.router.navigate(['/auth-error'], { queryParams: { reason: 'login_failed' }});
       }
     });
   }

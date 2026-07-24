@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {REGEX_CONTRACT} from '../../../constants/regex.constants';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {IRegisterRequest} from '../../../interfaces/auth.interface';
 import {AuthService} from '../../../services/auth-service';
 import {Loader} from '../../loader/loader';
@@ -27,6 +27,7 @@ export class SignUp implements OnInit{
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -58,13 +59,12 @@ export class SignUp implements OnInit{
 
     this.authService.register(requestPayload).subscribe({
       next: (response) => {
-        console.log('Registration successful: ', response.authMessage);
         this.isLoading = false;
+        this.router.navigate(['/signin'])
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('Registration error: ', err);
-        this.errorMessage = err.error?.message || 'An error occurred during registration. Please try again.';
+        this.router.navigate(['/auth-error'], { queryParams: { reason: 'registration_failed' }});
       }
     })
   }
