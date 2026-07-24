@@ -55,9 +55,11 @@ public class AuthServiceImpl implements AuthService {
         Roles userRole = rolesRepository.findByName(ROLE_USER).orElseThrow(() -> new IllegalArgumentException(DEFAULT_ROLE_NOT_FOUND));
         user.addRole(userRole);
 
-        UserProfile deferredProfile = new UserProfile();
-        deferredProfile.setTimezone("UTC");
-        user.setUserProfile(deferredProfile);
+        UserProfile defaultProfile = new UserProfile();
+        defaultProfile.setFirstName(request.firstName());
+        defaultProfile.setLastName(request.lastName());
+        defaultProfile.setTimezone("UTC");
+        user.setUserProfile(defaultProfile);
 
         this.usersRepository.save(user);
 

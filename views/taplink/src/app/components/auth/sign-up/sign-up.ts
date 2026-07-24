@@ -49,6 +49,8 @@ export class SignUp implements OnInit{
     this.errorMessage = '';
 
     const requestPayload: IRegisterRequest = {
+      firstName: this.signUpForm.value.firstName,
+      lastName: this.signUpForm.value.lastName,
       username: this.signUpForm.value.username,
       email: this.signUpForm.value.email,
       password: this.signUpForm.value.password

@@ -1,7 +1,7 @@
 -- ==============================================================================
 -- 1. Create User Profiles Table (One-to-One with Users)
 -- ==============================================================================
-CREATE TABLE user_profiles (
+CREATE TABLE user_profile (
     -- Primary Key acts as both the ID and the Foreign Key to the users table
     user_id BIGINT NOT NULL,
 
@@ -32,7 +32,7 @@ CREATE TABLE user_profiles (
 -- ==============================================================================
 -- 2. Create User Sessions Table (One-to-Many with Users)
 -- ==============================================================================
-CREATE TABLE user_sessions (
+CREATE TABLE user_session (
     id BIGINT NOT NULL AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
 

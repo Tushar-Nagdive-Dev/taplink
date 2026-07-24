@@ -1,5 +1,9 @@
 package org.co.taplink.utils;
 
+import com.beust.jcommander.internal.Maps;
+
+import java.util.Map;
+
 public final class TapLinkAppConstants {
 
     private TapLinkAppConstants() {
