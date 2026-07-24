@@ -26,6 +26,30 @@ public final class TapLinkAppConstants {
         public static final String USER = "USER";
     }
 
+    public static final class REQUEST_HEADERS {
+        public static final String X_FORWARDED_FOR = "X-Forwarded-For";
+        public static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
+        public static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
+        public static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
+        public static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
+        public static final String CF_CONNECTING_IP = "CF-Connecting-IP";
+        public static final String X_REAL_IP = "X-Real-IP";
+    }
+
+    public static final String[] CLIENT_IP_HEADERS = {
+            REQUEST_HEADERS.X_FORWARDED_FOR,
+            REQUEST_HEADERS.PROXY_CLIENT_IP,
+            REQUEST_HEADERS.WL_PROXY_CLIENT_IP,
+            REQUEST_HEADERS.HTTP_CLIENT_IP,
+            REQUEST_HEADERS.HTTP_X_FORWARDED_FOR,
+            REQUEST_HEADERS.CF_CONNECTING_IP,
+            REQUEST_HEADERS.X_REAL_IP
+    };
+
+
+    public static final String UNKNOWN_OS = "Unknown OS";
+    public static final String USER_AGENT = "User-Agent";
+    public static final String UNKNOWN = "unknown";
     public static final String ALLOWED_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static final int DEFAULT_CODE_LENGTH = 6;
     public static final String ROLE_USER = "ROLE_USER";

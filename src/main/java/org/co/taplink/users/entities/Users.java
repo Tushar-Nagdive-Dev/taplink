@@ -37,6 +37,23 @@ public class Users extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<UserRole> userRoles = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private UserProfile userProfile;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserSession> sessions = new HashSet<>();
+
+    public void setUserProfile(UserProfile userProfile) {
+        if(userProfile == null) {
+            if(this.userProfile != null) {
+                this.userProfile.setUser(null);
+            }
+        }else {
+            userProfile.setUser(this);
+        }
+        this.userProfile = userProfile;
+    }
+
     public void addRole(Roles role) {
         UserRole userRole = new UserRole();
         userRole.setRole(role);

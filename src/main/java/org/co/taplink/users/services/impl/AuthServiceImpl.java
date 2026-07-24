@@ -1,9 +1,11 @@
 package org.co.taplink.users.services.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.co.taplink.configs.jwt.JwtService;
 import org.co.taplink.users.entities.Roles;
+import org.co.taplink.users.entities.UserProfile;
 import org.co.taplink.users.entities.Users;
 import org.co.taplink.users.modals.AuthResponse;
 import org.co.taplink.users.modals.LoginRequest;
@@ -11,6 +13,7 @@ import org.co.taplink.users.modals.RegisterRequest;
 import org.co.taplink.users.repository.RolesRepository;
 import org.co.taplink.users.repository.UsersRepository;
 import org.co.taplink.users.services.AuthService;
+import org.co.taplink.users.services.UserSessionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +37,9 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private final UserSessionService sessionService;
+    private final HttpServletRequest request;
+
     @Transactional
     @Override
     public ResponseEntity<@NonNull AuthResponse> register(RegisterRequest request) {
@@ -48,6 +54,11 @@ public class AuthServiceImpl implements AuthService {
 
         Roles userRole = rolesRepository.findByName(ROLE_USER).orElseThrow(() -> new IllegalArgumentException(DEFAULT_ROLE_NOT_FOUND));
         user.addRole(userRole);
+
+        UserProfile deferredProfile = new UserProfile();
+        deferredProfile.setTimezone("UTC");
+        user.setUserProfile(deferredProfile);
+
         this.usersRepository.save(user);
 
         String jwtToken = jwtService.generateToken(user);
@@ -64,6 +75,9 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<@NonNull AuthResponse> login(LoginRequest request) {
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         Users user = this.usersRepository.findByUsernameWithRoles(request.username()).orElseThrow(() -> new IllegalArgumentException(INVALID_USER));
+
+        this.sessionService.createSession(user, this.request);
+
         String jwtToken = jwtService.generateToken(user);
         ResponseCookie jwtCookie = ResponseCookie.from("taplink_token", jwtToken).httpOnly(true)
                 .secure(false) //Set to TRUE in production when you have HTTPS!
