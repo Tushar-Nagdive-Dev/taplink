@@ -1,6 +1,6 @@
 <div class="toast-container">
   <div *ngFor="let toast of toastService.toasts$ | async"
-       class="macos-toast slide-in"
+       class="macos-toast macos-glass slide-in"
        [ngClass]="toast.type">
 
     <div class="toast-icon">

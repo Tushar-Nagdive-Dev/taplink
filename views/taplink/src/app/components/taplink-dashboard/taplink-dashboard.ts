@@ -2,13 +2,15 @@ import {Component, inject, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth-service';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
 import {CommonModule} from '@angular/common';
+import {BarChart3, Link, LogOut, LucideAngularModule, Palette, Settings} from 'lucide-angular';
 
 @Component({
   selector: 'app-taplink-dashboard',
   imports: [
     RouterLink,
     RouterOutlet,
-    CommonModule
+    CommonModule,
+    LucideAngularModule
   ],
   templateUrl: './taplink-dashboard.html',
   styleUrl: './taplink-dashboard.scss',
@@ -18,11 +20,17 @@ export class TaplinkDashboard implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  readonly LinkIcon = Link;
+  readonly PaletteIcon = Palette;
+  readonly BarChartIcon = BarChart3;
+  readonly SettingsIcon = Settings;
+  readonly LogOutIcon = LogOut;
+
   menuItems = [
-    { label: 'My Links', icon: '🔗', route: '/dashboard/links' },
-    { label: 'Appearance', icon: '🎨', route: '/dashboard/appearance' },
-    { label: 'Analytics', icon: '📊', route: '/dashboard/analytics' },
-    { label: 'Settings', icon: '⚙️', route: '/dashboard/settings' }
+    { label: 'My Links', icon: this.LinkIcon, route: '/dashboard/links' },
+    { label: 'Appearance', icon: this.PaletteIcon, route: '/dashboard/appearance' },
+    { label: 'Analytics', icon: this.BarChartIcon, route: '/dashboard/analytics' },
+    { label: 'Settings', icon: this.SettingsIcon, route: '/dashboard/settings' }
   ];
 
   ngOnInit(): void {
