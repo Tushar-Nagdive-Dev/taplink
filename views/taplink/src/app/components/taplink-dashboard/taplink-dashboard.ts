@@ -1,30 +1,33 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
+import { LucideAngularModule, Link, Palette, BarChart3, Settings, LogOut, PanelLeft, PanelRight, Bell } from 'lucide-angular';
 import {AuthService} from '../../services/auth-service';
-import {Router, RouterLink, RouterOutlet} from '@angular/router';
-import {CommonModule} from '@angular/common';
-import {BarChart3, Link, LogOut, LucideAngularModule, Palette, Settings} from 'lucide-angular';
 
 @Component({
   selector: 'app-taplink-dashboard',
-  imports: [
-    RouterLink,
-    RouterOutlet,
-    CommonModule,
-    LucideAngularModule
-  ],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './taplink-dashboard.html',
-  styleUrl: './taplink-dashboard.scss',
+  styleUrl: './taplink-dashboard.scss'
 })
-export class TaplinkDashboard implements OnInit {
-
+export class TaplinkDashboard {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  // --- UI State ---
+  isLeftExpanded = true;
+  isRightExpanded = false;
+
+  // --- Icons ---
   readonly LinkIcon = Link;
   readonly PaletteIcon = Palette;
   readonly BarChartIcon = BarChart3;
   readonly SettingsIcon = Settings;
   readonly LogOutIcon = LogOut;
+  readonly PanelLeftIcon = PanelLeft;
+  readonly PanelRightIcon = PanelRight;
+  readonly BellIcon = Bell;
 
   menuItems = [
     { label: 'My Links', icon: this.LinkIcon, route: '/dashboard/links' },
@@ -33,20 +36,19 @@ export class TaplinkDashboard implements OnInit {
     { label: 'Settings', icon: this.SettingsIcon, route: '/dashboard/settings' }
   ];
 
-  ngOnInit(): void {
-
+  // --- Toggle Methods ---
+  toggleLeftSidebar() {
+    this.isLeftExpanded = !this.isLeftExpanded;
   }
+
+  toggleRightSidebar() {
+    this.isRightExpanded = !this.isRightExpanded;
+  }
+
   logout() {
     this.authService.logout().subscribe({
-      next: () => {
-        // Clear local state and redirect to the welcome/signin page
-        this.router.navigate(['/signin']);
-      },
-      error: (err) => {
-        console.error('Logout failed', err);
-        // Force redirect anyway for safety
-        this.router.navigate(['/signin']);
-      }
+      next: () => this.router.navigate(['/signin']),
+      error: () => this.router.navigate(['/signin'])
     });
   }
 }
