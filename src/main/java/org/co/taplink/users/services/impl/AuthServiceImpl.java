@@ -1,9 +1,11 @@
 package org.co.taplink.users.services.impl;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.co.taplink.configs.jwt.JwtService;
+import org.co.taplink.configs.security.TokenBlocklistService;
 import org.co.taplink.users.entities.Roles;
 import org.co.taplink.users.entities.UserProfile;
 import org.co.taplink.users.entities.Users;
@@ -23,7 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.co.taplink.utils.TapLinkAppConstants.ROLE_USER;
+import static org.co.taplink.utils.TapLinkAppConstants.*;
 import static org.co.taplink.utils.TapLinkAppMessages.Auth.*;
 
 @Service
@@ -38,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserSessionService sessionService;
     private final HttpServletRequest request;
+    private final TokenBlocklistService tokenBlocklistService;
 
     @Transactional
     @Override
@@ -63,13 +66,13 @@ public class AuthServiceImpl implements AuthService {
         this.usersRepository.save(user);
 
         String jwtToken = jwtService.generateToken(user);
-        ResponseCookie jwtCookie = ResponseCookie.from("taplink_token", jwtToken).httpOnly(true)
+        ResponseCookie jwtCookie = ResponseCookie.from(TAPLINK_TOKEN, jwtToken).httpOnly(true)
                 .secure(false) //Set to TRUE in production when you have HTTPS!
-                .path("/").maxAge(7 * 24 * 60 * 60) // Expires in 7 days
-                .sameSite("Strict").build(); // Protects against Cross-Site Request Forgery (CSRF)
+                .path(FORWARD_SLASH).maxAge(EXPIRE_7_DAYS) // Expires in 7 days
+                .sameSite(STRICT).build(); // Protects against Cross-Site Request Forgery (CSRF)
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new AuthResponse("Registration successful"));
+                .body(new AuthResponse(REGISTER_SUCCESS));
     }
 
     @Override
@@ -80,12 +83,35 @@ public class AuthServiceImpl implements AuthService {
         this.sessionService.createSession(user, this.request);
 
         String jwtToken = jwtService.generateToken(user);
-        ResponseCookie jwtCookie = ResponseCookie.from("taplink_token", jwtToken).httpOnly(true)
+        ResponseCookie jwtCookie = ResponseCookie.from(TAPLINK_TOKEN, jwtToken).httpOnly(true)
                 .secure(false) //Set to TRUE in production when you have HTTPS!
-                .path("/").maxAge(7 * 24 * 60 * 60) // Expires in 7 days
-                .sameSite("Strict").build(); // Protects against Cross-Site Request Forgery (CSRF)
+                .path(FORWARD_SLASH).maxAge(EXPIRE_7_DAYS) // Expires in 7 days
+                .sameSite(STRICT).build(); // Protects against Cross-Site Request Forgery (CSRF)
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new AuthResponse("Login successful"));
+                .body(new AuthResponse(LOGIN_SUCCESS));
+    }
+
+    @Override
+    public ResponseEntity<@NonNull AuthResponse> logout(HttpServletRequest request) {
+        String tokenToKill = null;
+        if(request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if(TAPLINK_TOKEN.equals(cookie.getName())) {
+                    tokenToKill = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        if(tokenToKill != null && !tokenToKill.isEmpty()) {
+            tokenBlocklistService.blockToken(tokenToKill);
+        }
+        ResponseCookie deleteCookie = ResponseCookie.from(TAPLINK_TOKEN, EMPTY_STRING)
+                .httpOnly(true).secure(false)
+                .path(FORWARD_SLASH).maxAge(0)
+                .sameSite(STRICT).build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(new AuthResponse(SUCCESSFUL_LOGOUT));
     }
 }

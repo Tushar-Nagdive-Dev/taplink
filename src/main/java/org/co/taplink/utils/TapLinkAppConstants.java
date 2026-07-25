@@ -47,6 +47,8 @@ public final class TapLinkAppConstants {
     };
 
 
+    public static final String EMPTY_STRING = "";
+    public static final Integer EXPIRE_7_DAYS = 7 * 24 * 60 * 60;
     public static final String USER_AGENT = "User-Agent";
     public static final String UNKNOWN = "unknown";
     public static final String ALLOWED_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -61,4 +63,6 @@ public final class TapLinkAppConstants {
     public static final String VER_1_0 = "1.0";
     public static final String JWT = "JWT";
     public static final String BEARER_AUTH = "bearerAuth";
+    public static final String TAPLINK_TOKEN = "taplink_token";
+    public static final String STRICT = "Strict";
 }

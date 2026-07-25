@@ -4,6 +4,7 @@ import { SignIn } from './components/auth/sign-in/sign-in';
 import { SignUp } from './components/auth/sign-up/sign-up';
 import {TaplinkDashboard} from './components/taplink-dashboard/taplink-dashboard';
 import {AuthErrorComponent} from './components/auth/auth-error.component';
+import {authGuard} from './guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -21,6 +22,9 @@ export const routes: Routes = [
     },
     {
         path: 'taplink-dashboard',
-        component: TaplinkDashboard
-    }
+        component: TaplinkDashboard,
+        canActivate: [authGuard],
+        children: []
+    },
+    { path: '**', redirectTo: '' } // Fallback catch-all route
 ];

@@ -1,5 +1,6 @@
 package org.co.taplink.users.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.co.taplink.users.modals.AuthResponse;
@@ -29,5 +30,10 @@ public class AuthController {
     @PostMapping("login")
     public ResponseEntity<@NonNull AuthResponse> login(@RequestBody LoginRequest request) {
         return this.authService.login(request);
+    }
+
+    @PostMapping("logout")
+    public ResponseEntity<@NonNull AuthResponse> logout(HttpServletRequest request) {
+        return this.authService.logout(request);
     }
 }

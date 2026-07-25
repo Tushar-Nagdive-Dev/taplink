@@ -14,8 +14,9 @@ public final class TapLinkAppMessages {
 
         // Static messages remain normal
         public static final String LOGIN_SUCCESS = "Successfully logged in.";
-        public static final String REGISTER_SUCCESS = "Account created successfully.";
+        public static final String REGISTER_SUCCESS = "Registration successful.";
         public static final String DEFAULT_ROLE_NOT_FOUND = "Default Role not found in database.";
+        public static final String SUCCESSFUL_LOGOUT = "Successfully logged out and token destroyed";
     }
 
     public static final class Error {
