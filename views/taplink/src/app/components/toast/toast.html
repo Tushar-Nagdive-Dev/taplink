@@ -1,16 +1,29 @@
-<div class="toast-container">
-  <div *ngFor="let toast of toastService.toasts$ | async"
-       class="macos-toast macos-glass slide-in"
-       [ngClass]="toast.type">
+<div class="fixed top-6 right-6 z-[9999] flex flex-col gap-3 w-full max-w-sm pointer-events-none">
 
-    <div class="toast-icon">
-      <span *ngIf="toast.type === 'success'">✅</span>
-      <span *ngIf="toast.type === 'error'">⚠️</span>
-      <span *ngIf="toast.type === 'info'">ℹ️</span>
+  <div *ngFor="let toast of toastService.toasts$ | async"
+       class="pointer-events-auto flex items-start p-4 rounded-2xl shadow-xl backdrop-blur-2xl border bg-white/85 transform transition-all duration-300 animate-in slide-in-from-right-8 fade-in"
+       [ngClass]="{
+         'border-green-200/60 shadow-green-500/10': toast.type === 'success',
+         'border-red-200/60 shadow-red-500/10': toast.type === 'error',
+         'border-blue-200/60 shadow-blue-500/10': toast.type === 'info',
+         'border-amber-200/60 shadow-amber-500/10': toast.type === 'warning'
+       }">
+
+    <div class="shrink-0 mr-3 mt-0.5">
+      <lucide-icon *ngIf="toast.type === 'success'" [img]="CheckIcon" class="w-5 h-5 text-green-500"></lucide-icon>
+      <lucide-icon *ngIf="toast.type === 'error'" [img]="ErrorIcon" class="w-5 h-5 text-red-500"></lucide-icon>
+      <lucide-icon *ngIf="toast.type === 'info'" [img]="InfoIcon" class="w-5 h-5 text-blue-500"></lucide-icon>
+      <lucide-icon *ngIf="toast.type === 'warning'" [img]="WarningIcon" class="w-5 h-5 text-amber-500"></lucide-icon>
     </div>
 
-    <div class="toast-message">{{ toast.message }}</div>
+    <div class="flex-1 text-sm font-medium text-slate-700 leading-snug">
+      {{ toast.message }}
+    </div>
 
-    <button class="close-btn" (click)="toastService.remove(toast.id)">✕</button>
+    <button (click)="toastService.remove(toast.id)"
+            class="ml-4 shrink-0 text-slate-400 hover:text-slate-700 transition-colors p-1 rounded-lg hover:bg-slate-100/50">
+      <lucide-icon [img]="CloseIcon" class="w-4 h-4"></lucide-icon>
+    </button>
+
   </div>
 </div>

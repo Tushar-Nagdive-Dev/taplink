@@ -30,4 +30,10 @@ public class UserSessionServiceImpl implements UserSessionService {
         session.setIsActive(true);
         this.userSessionRepository.save(session);
     }
+
+    @Override
+    @Transactional
+    public void deleteSessionByUser(Users user) {
+        this.userSessionRepository.deleteByUserId(user.getId());
+    }
 }

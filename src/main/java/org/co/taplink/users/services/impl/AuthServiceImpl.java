@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.co.taplink.configs.jwt.JwtService;
+import org.co.taplink.configs.security.SecurityUtils;
 import org.co.taplink.configs.security.TokenBlocklistService;
 import org.co.taplink.users.entities.Roles;
 import org.co.taplink.users.entities.UserProfile;
@@ -94,6 +95,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<@NonNull AuthResponse> logout(HttpServletRequest request) {
+        Users user = SecurityUtils.getCurrentUser();
+        this.sessionService.deleteSessionByUser(user);
         String tokenToKill = null;
         if(request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {

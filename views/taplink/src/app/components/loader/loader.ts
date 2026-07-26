@@ -1,13 +1,13 @@
-import {Component, Input} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {LucideAngularModule} from 'lucide-angular';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-loader',
-  imports: [CommonModule, LucideAngularModule],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './loader.html',
-  styleUrl: './loader.scss',
+  styleUrl: './loader.scss', // You can leave the SCSS file completely empty!
 })
 export class Loader {
-  @Input() message: string = '';
+  @Input() message: string = 'Loading...'; // Added a default fallback message
 }

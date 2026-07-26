@@ -1,14 +1,29 @@
-<div class="loader-overlay">
-  <div class="loader-glass-panel macos-glass">
+<div class="fixed inset-0 z-[999] flex items-center justify-center bg-slate-900/30 backdrop-blur-md transition-all animate-in fade-in duration-300">
 
-    <div class="spinner-container">
-      <div class="gradient-ring"></div>
-      <div class="brand-center">
-        <span class="icon">🔗</span>
+  <div class="bg-white/80 backdrop-blur-2xl rounded-[2rem] p-8 shadow-2xl border border-white flex flex-col items-center justify-center gap-6 min-w-[240px] transform transition-all animate-in zoom-in-95 duration-300">
+
+    <div class="relative w-20 h-20 flex items-center justify-center">
+
+      <div class="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+
+      <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 border-r-cyan-400 animate-spin"></div>
+
+      <div class="absolute inset-2 bg-gradient-to-br from-blue-100 to-cyan-50 rounded-full animate-pulse opacity-50"></div>
+
+      <div class="relative z-10 flex items-center justify-center drop-shadow-sm">
+        <span class="text-3xl">🔗</span>
       </div>
+
     </div>
 
-    <p class="loading-text" *ngIf="message">{{ message }}</p>
+    <div *ngIf="message" class="flex flex-col items-center gap-1">
+      <p class="text-sm font-bold text-slate-700 tracking-wide">{{ message }}</p>
+      <div class="flex items-center gap-1 mt-1">
+        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0s;"></span>
+        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.15s;"></span>
+        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.3s;"></span>
+      </div>
+    </div>
 
   </div>
 </div>

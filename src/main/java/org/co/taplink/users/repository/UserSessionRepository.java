@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface UserSessionRepository extends JpaRepository<@NonNull UserSession,@NonNull Long> {
     List<UserSession> findByUserIdAndIsActiveTrue(@NonNull Long userId);
+    void deleteByUserId(Long userId);
 }

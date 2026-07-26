@@ -5,4 +5,6 @@ import org.co.taplink.users.entities.Users;
 
 public interface UserSessionService {
     void createSession(Users user, HttpServletRequest request);
+
+    void deleteSessionByUser(Users user);
 }
