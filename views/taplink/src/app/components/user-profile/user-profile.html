@@ -1,0 +1,88 @@
+<div *ngIf="isOpen"
+     class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm fade-in-up">
+
+  <div class="bg-white/90 backdrop-blur-2xl rounded-3xl w-full max-w-lg shadow-2xl border border-white overflow-hidden flex flex-col">
+
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200/50">
+      <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <lucide-icon [img]="UserIcon" class="w-5 h-5 text-blue-500"></lucide-icon>
+        Edit Profile
+      </h3>
+      <button (click)="close.emit()" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all">
+        <lucide-icon [img]="CloseIcon" class="w-5 h-5"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="p-6 overflow-y-auto max-h-[70vh] flex flex-col gap-4">
+
+      <div class="flex items-center gap-4 mb-2">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-500 font-bold text-xl shadow-inner border border-white overflow-hidden">
+          <img *ngIf="userProfile.profilePictureUrl" [src]="userProfile.profilePictureUrl" class="w-full h-full object-cover">
+          <span *ngIf="!userProfile.profilePictureUrl">{{ userProfile.firstName.charAt(0) }}</span>
+        </div>
+        <div class="flex-1 flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Profile Picture URL</label>
+          <div class="flex items-center bg-slate-50/50 border border-slate-200 rounded-xl px-3 py-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+            <lucide-icon [img]="ImageIcon" class="w-4 h-4 text-slate-400 mr-2"></lucide-icon>
+            <input type="text" [(ngModel)]="userProfile.profilePictureUrl" placeholder="https://..." class="bg-transparent border-none outline-none w-full text-sm text-slate-700">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="flex-1 flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">First Name</label>
+          <input type="text" [(ngModel)]="userProfile.firstName" class="bg-slate-50/50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-700 transition-all">
+        </div>
+        <div class="flex-1 flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Last Name</label>
+          <input type="text" [(ngModel)]="userProfile.lastName" class="bg-slate-50/50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-700 transition-all">
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Bio</label>
+        <textarea [(ngModel)]="userProfile.bio" rows="3" placeholder="Tell your audience about yourself..." class="bg-slate-50/50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm text-slate-700 transition-all resize-none"></textarea>
+      </div>
+
+      <div class="flex gap-4">
+
+        <div class="flex-1 flex flex-col gap-1 relative">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Location</label>
+          <div class="flex items-center bg-slate-50/50 border border-slate-200 rounded-xl px-3 py-2 focus-within:border-blue-500 transition-all">
+            <lucide-icon [img]="MapPinIcon" class="w-4 h-4 text-slate-400 mr-2"></lucide-icon>
+            <input type="text" [value]="userProfile.location" (input)="onLocationSearch($event)" placeholder="Search city..." autocomplete="off" class="bg-transparent border-none outline-none w-full text-sm text-slate-700">
+          </div>
+
+          <div *ngIf="locationResults.length > 0" class="absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl shadow-xl rounded-xl border border-slate-200 mt-2 z-50 overflow-hidden max-h-48 overflow-y-auto">
+            <button *ngFor="let loc of locationResults" (click)="selectLocation(loc)" class="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-slate-100 last:border-0 truncate">
+              {{ loc.display_name }}
+            </button>
+          </div>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Timezone</label>
+          <div class="flex items-center bg-slate-50/50 border border-slate-200 rounded-xl px-3 py-2 focus-within:border-blue-500 transition-all">
+            <lucide-icon [img]="ClockIcon" class="w-4 h-4 text-slate-400 mr-2"></lucide-icon>
+            <select [(ngModel)]="userProfile.timezone" class="bg-transparent border-none outline-none w-full text-sm text-slate-700 cursor-pointer">
+              <option *ngFor="let tz of worldTimeZones" [value]="tz">{{ tz }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-200/50 flex justify-end gap-3">
+      <button (click)="close.emit()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-200/50 transition-all">
+        Cancel
+      </button>
+      <button (click)="onSave()" [disabled]="isLoading" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+        <span *ngIf="isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+        {{ isLoading ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+
+  </div>
+</div>

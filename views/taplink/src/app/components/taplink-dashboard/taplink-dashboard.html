@@ -51,7 +51,8 @@
           <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
         </button>
 
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center font-bold shadow-lg shadow-blue-500/30 cursor-pointer hover:scale-105 transition-all">
+        <div (click)="openProfileModal()"
+          class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 text-white flex items-center justify-center font-bold shadow-lg shadow-blue-500/30 cursor-pointer hover:scale-105 transition-all">
           U
         </div>
 
@@ -94,3 +95,7 @@
   </aside>
 
 </div>
+<app-user-profile
+  [isOpen]="isProfileModalOpen"
+  (close)="closeProfileModal()"
+></app-user-profile>

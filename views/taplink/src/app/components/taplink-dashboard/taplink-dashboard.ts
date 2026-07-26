@@ -3,17 +3,19 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule, Link, Palette, BarChart3, Settings, LogOut, PanelLeft, PanelRight, Bell } from 'lucide-angular';
 import {AuthService} from '../../services/auth-service';
+import {UserProfile} from '../user-profile/user-profile';
 
 @Component({
   selector: 'app-taplink-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule, UserProfile],
   templateUrl: './taplink-dashboard.html',
   styleUrl: './taplink-dashboard.scss'
 })
 export class TaplinkDashboard {
   private authService = inject(AuthService);
   private router = inject(Router);
+  isProfileModalOpen: boolean = false;
 
   // --- UI State ---
   isLeftExpanded = true;
@@ -50,5 +52,13 @@ export class TaplinkDashboard {
       next: () => this.router.navigate(['/signin']),
       error: () => this.router.navigate(['/signin'])
     });
+  }
+
+  openProfileModal() {
+    this.isProfileModalOpen = true;
+  }
+
+  closeProfileModal() {
+    this.isProfileModalOpen = false;
   }
 }

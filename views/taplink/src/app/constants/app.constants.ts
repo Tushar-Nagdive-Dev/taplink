@@ -12,5 +12,6 @@ export const AppConstants = Object.freeze({
   SESSION_EXPIRED : 'Your session has expired. Please log in again to continue.',
   CHECK_USERNAME_AND_PASSWORD : 'We could not log you in. Please check your username and password.',
   USERNAME_ALREADY_TAKEN : 'There was a problem creating your account. That username might be taken.',
-  LOGIN_SUCCESSFUL : 'Login successful! Welcome back.'
+  LOGIN_SUCCESSFUL : 'Login successful! Welcome back.',
+  TIMEZONE: 'timeZone'
 });
