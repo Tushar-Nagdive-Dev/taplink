@@ -3,6 +3,8 @@ import {Clock, Image, LucideAngularModule, MapPin, User, X} from 'lucide-angular
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {AppConstants} from '../../constants/app.constants';
+import {UserService} from '../../services/user-service';
+import {IUserProfile} from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-user-profile',
@@ -34,7 +36,7 @@ export class UserProfile implements OnInit{
   readonly ClockIcon = Clock;
   readonly ImageIcon = Image;
 
-  userProfile = {
+  userProfile: IUserProfile = {
     firstName: 'John',
     lastName: 'Doe',
     bio: 'Software Engineer & Creator',
@@ -43,8 +45,23 @@ export class UserProfile implements OnInit{
     profilePictureUrl: ''
   };
 
-  ngOnInit(): void {
+  constructor(
+    private userService: UserService,
+  ) {}
 
+  ngOnInit(): void {
+    this.getUserProfile();
+  }
+
+  getUserProfile() {
+    this.userService.getUserProfile().subscribe({
+      next: response => {
+        this.userProfile = response;
+      },
+      error: error => {
+        console.log(error);
+      }
+    });
   }
 
   onLocationSearch(event: any) {

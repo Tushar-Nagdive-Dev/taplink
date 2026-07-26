@@ -51,7 +51,8 @@ public class SecurityConfig {
                         .requestMatchers(ADMIN_PATH + FORWARD_SLASH + MATCH_ALL).hasRole(ADMIN)
                         .requestMatchers(
                                 PREMIUM_USER_PATH + FORWARD_SLASH + MATCH_ALL,
-                                QR_BARCODE_PATH + FORWARD_SLASH + MATCH_ALL)
+                                QR_BARCODE_PATH + FORWARD_SLASH + MATCH_ALL,
+                                USER_PROFILE_PATH + FORWARD_SLASH + MATCH_ALL)
                         .hasAnyRole(USER, PREMIUM)
                         .requestMatchers(LINKS_PATH + FORWARD_SLASH + MATCH_ALL).hasAnyRole(USER, ADMIN)
                 .anyRequest().authenticated())

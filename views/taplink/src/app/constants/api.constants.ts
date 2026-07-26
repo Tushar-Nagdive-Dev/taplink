@@ -8,5 +8,8 @@ export const APIs = Object.freeze({
     LOGIN_SUCCESS : '/login-success',
     REGISTER : `${BASE}/api/v1/auth/register`,
     LOGOUT: `${BASE}/api/v1/auth/logout`
+  },
+  USER : {
+    GET_USER_PROFILE : `${BASE}/api/v1/userprofile`,
   }
 })

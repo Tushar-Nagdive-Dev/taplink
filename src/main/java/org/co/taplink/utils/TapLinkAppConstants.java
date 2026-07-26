@@ -18,6 +18,7 @@ public final class TapLinkAppConstants {
         public static final String V3_API_DOCS_PATH = "/v3/api-docs/**";
         public static final String LINKS_PATH = "/api/v1/links";
         public static final String QR_BARCODE_PATH = "/api/v1/qrcode";
+        public static final String USER_PROFILE_PATH = "/api/v1/userprofile";
     }
 
     public static final class ROLES {
