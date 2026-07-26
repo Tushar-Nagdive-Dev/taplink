@@ -11,6 +11,7 @@ public final class TapLinkAppMessages {
         public static final String EMAIL_TAKEN = "Registration failed: Email '%s' is already registered!";
         public static final String ROLE_NOT_FOUND = "Critical Error: System role '%s' not found in the database.";
         public static final String INVALID_USER = "Authentication failed for user: '%s'.";
+        public static final String SESSION_EXPIRED = "Session expired. Please login again.";
 
         // Static messages remain normal
         public static final String LOGIN_SUCCESS = "Successfully logged in.";

@@ -11,6 +11,8 @@ import lombok.NonNull;
 import org.co.taplink.configs.security.TokenBlocklistService;
 import org.co.taplink.users.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,18 +23,19 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
+import static org.co.taplink.utils.TapLinkAppConstants.*;
+import static org.co.taplink.utils.TapLinkAppMessages.Auth.SESSION_EXPIRED;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
-    private final HandlerExceptionResolver exceptionResolver;
     private final TokenBlocklistService tokenBlocklistService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailsService customUserDetailsService, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,  TokenBlocklistService tokenBlocklistService) {
+    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailsService customUserDetailsService,  TokenBlocklistService tokenBlocklistService) {
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
-        this.exceptionResolver = exceptionResolver;
         this.tokenBlocklistService = tokenBlocklistService;
     }
 
@@ -40,16 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String jwt = null;
         String username = null;
-        String path = request.getRequestURI();
-        if (path.contains("/auth/register") || path.contains("/auth/login")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+
         try {
             // 1. Extract the token from the HttpOnly Cookies (NOT Headers!)
             if (request.getCookies() != null) {
                 for (Cookie cookie : request.getCookies()) {
-                    if ("taplink_token".equals(cookie.getName())) {
+                    if (TAPLINK_TOKEN.equals(cookie.getName())) {
                         jwt = cookie.getValue();
                         break;
                     }
@@ -64,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 3. SECURE LOGOUT CHECK: Is this token in the blocklist?
             if (tokenBlocklistService.isBlocked(jwt)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Session terminated. Please log in again.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, SESSION_EXPIRED);
                 return;
             }
 
@@ -84,8 +83,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
 
-        } catch (ExpiredJwtException | SignatureException exception) {
-            exceptionResolver.resolveException(request, response, null, exception);
+        } catch (ExpiredJwtException exception) {
+            SecurityContextHolder.clearContext();
+            ResponseCookie deleteCookie = ResponseCookie.from(TAPLINK_TOKEN, EMPTY_STRING)
+                    .httpOnly(true).secure(false).path(FORWARD_SLASH)
+                    .maxAge(0).sameSite(STRICT).build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, SESSION_EXPIRED);
         }
     }
 }

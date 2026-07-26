@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {ActivatedRoute} from '@angular/router';
@@ -26,7 +26,7 @@ import {AppConstants} from '../../constants/app.constants';
   `]
 })
 export class AuthErrorComponent implements OnInit {
-  private route = Inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
   errorMessage: string = AppConstants.SOMETHING_WENT_WRONG;
 
   ngOnInit(): void {
