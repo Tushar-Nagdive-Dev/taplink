@@ -3,9 +3,7 @@ package org.co.taplink.users.controllers;
 import lombok.RequiredArgsConstructor;
 import org.co.taplink.users.modals.UserProfileDto;
 import org.co.taplink.users.services.UserProfileService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.co.taplink.utils.TapLinkAppConstants.API_PATHS.USER_PROFILE_PATH;
 
@@ -19,5 +17,10 @@ public class UserProfileController {
     @GetMapping()
     public UserProfileDto getCurrentUserProfile() {
         return this.userProfileService.getCurrentUserProfile();
+    }
+
+    @PutMapping()
+    public UserProfileDto updateCurrentUserProfile(@RequestBody UserProfileDto request) {
+        return this.userProfileService.updateCurrentUserProfile(request);
     }
 }

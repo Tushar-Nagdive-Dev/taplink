@@ -1,5 +1,3 @@
-import {ToastType} from '../modals/app.modal';
-
 export const AppConstants = Object.freeze({
   TOAST_TYPE: {
     SUCCESS: 'success',
@@ -13,5 +11,10 @@ export const AppConstants = Object.freeze({
   CHECK_USERNAME_AND_PASSWORD : 'We could not log you in. Please check your username and password.',
   USERNAME_ALREADY_TAKEN : 'There was a problem creating your account. That username might be taken.',
   LOGIN_SUCCESSFUL : 'Login successful! Welcome back.',
-  TIMEZONE: 'timeZone'
+  TIMEZONE: 'timeZone',
+  CHANGE_DISPLAY_NAME : 'Change Display Name?',
+  CHANGE_DISPLAY_NAME_MSG : 'You are about to change your public display name from',
+  TO: 'to',
+  TOAST_USER_PROFILE_SAVE_MSG: 'User profile updated successfully.',
+  TOAST_USER_PROFILE_SAVE_FAILED: 'User profile update failed',
 });

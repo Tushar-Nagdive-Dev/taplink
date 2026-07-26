@@ -10,11 +10,14 @@ import org.co.taplink.users.repository.UserProfileRepository;
 import org.co.taplink.users.repository.UsersRepository;
 import org.co.taplink.users.services.UserProfileService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.co.taplink.utils.TapLinkAppMessages.Auth.USER_PROFILE_NOT_FOUND;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public final class UserProfileServiceImpl implements UserProfileService {
+public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
 
@@ -22,12 +25,7 @@ public final class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     public UserProfileDto getCurrentUserProfile() {
-        Users user = SecurityUtils.getCurrentUser();
-        if(user != null) {
-            log.info("getCurrentUserProfile() called by username: {}", user.getUsername());
-        } else {
-            throw new IllegalStateException("getCurrentUserProfile() called by username: null");
-        }
+        Users user = getUser();
         UserProfile profile = user.getUserProfile();
         return new UserProfileDto(
                 profile.getFirstName(),
@@ -35,6 +33,36 @@ public final class UserProfileServiceImpl implements UserProfileService {
                 profile.getProfilePictureUrl(),
                 profile.getBio(),
                 profile.getLocation(),
-                profile.getLocation());
+                profile.getTimezone());
     }
+
+    @Override
+    @Transactional
+    public UserProfileDto updateCurrentUserProfile(UserProfileDto request) {
+        Users currentUser = getUser();
+        UserProfile profile = currentUser.getUserProfile();
+        if(profile != null) {
+            profile.setFirstName(request.firstName());
+            profile.setLastName(request.lastName());
+            profile.setProfilePictureUrl(request.profilePictureUrl());
+            profile.setBio(request.bio());
+            profile.setLocation(request.location());
+            profile.setTimezone(request.timezone());
+            this.userProfileRepository.save(profile);
+            return request;
+        } else {
+            throw new RuntimeException(USER_PROFILE_NOT_FOUND);
+        }
+    }
+
+    private static Users getUser() {
+        Users user = SecurityUtils.getCurrentUser();
+        if(user != null) {
+            log.info("getCurrentUserProfile() called by username: {}", user.getUsername());
+        } else {
+            throw new IllegalStateException("Current user is null");
+        }
+        return user;
+    }
+
 }

@@ -1,10 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Clock, Image, LucideAngularModule, MapPin, User, X} from 'lucide-angular';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {AlertTriangle, Clock, Image, LucideAngularModule, MapPin, User, X} from 'lucide-angular';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {AppConstants} from '../../constants/app.constants';
 import {UserService} from '../../services/user-service';
 import {IUserProfile} from '../../interfaces/user.interface';
+import {ToastService} from '../../services/toast-service';
 
 @Component({
   selector: 'app-user-profile',
@@ -16,25 +17,29 @@ import {IUserProfile} from '../../interfaces/user.interface';
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss',
 })
-export class UserProfile implements OnInit{
-
+export class UserProfile implements OnInit, OnChanges{
+  /*Boolean Elements S*/
   @Input() isOpen: boolean = false;
+  isLoading = false;
+  isFetchingData: boolean = false;
+  showPiiWarning: boolean = false;
+  isTimezoneDropdownOpen: boolean = false;
+  /*Boolean Elements E*/
 
   @Output() close = new EventEmitter<void>();
-
-  isLoading = false
-
   worldTimeZones = Intl.supportedValuesOf(AppConstants.TIMEZONE);
-
   locationResults : any[] = [];
-
+  filteredTimezones: string[] = [];
+  originalProfile: IUserProfile | null = null;
   searchTimeout: any;
 
+  protected readonly AppConstants = AppConstants;
   readonly CloseIcon = X;
   readonly UserIcon = User;
   readonly MapPinIcon = MapPin;
   readonly ClockIcon = Clock;
   readonly ImageIcon = Image;
+  readonly AlertIcon = AlertTriangle;
 
   userProfile: IUserProfile = {
     firstName: 'John',
@@ -47,19 +52,33 @@ export class UserProfile implements OnInit{
 
   constructor(
     private userService: UserService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
     this.getUserProfile();
   }
 
+  ngOnChanges(changes:SimpleChanges): void {
+    if (changes['isOpen'] && changes['isOpen'].currentValue === true) {
+      this.getUserProfile();
+    } else {
+      this.showPiiWarning = false;
+      this.isTimezoneDropdownOpen = false;
+      this.locationResults = [];
+    }
+  }
+
   getUserProfile() {
     this.userService.getUserProfile().subscribe({
       next: response => {
-        this.userProfile = response;
+        this.userProfile = { ...response };
+        this.originalProfile = JSON.parse(JSON.stringify(response));
+        this.isFetchingData = false;
       },
       error: error => {
         console.log(error);
+        this.isFetchingData = false;
       }
     });
   }
@@ -70,7 +89,7 @@ export class UserProfile implements OnInit{
 
     clearTimeout(this.searchTimeout);
 
-    if(query.length > 6) {
+    if(query.length < 3) {
       this.locationResults = [];
       return;
     }
@@ -91,7 +110,50 @@ export class UserProfile implements OnInit{
     this.locationResults = [];
   }
 
+  onTimezoneSearch(event: any) {
+    const query = event.target.value.toLowerCase();
+    this.userProfile.timezone = event.target.value;
+    this.isTimezoneDropdownOpen = true;
+    if(!query) {
+      this.filteredTimezones = this.worldTimeZones;
+      return;
+    }
+    this.filteredTimezones = this.worldTimeZones.filter(tz => tz.toLowerCase().includes(query));
+  }
+
+  selectTimezone(tz: string) {
+    this.userProfile.timezone = tz;
+    this.isTimezoneDropdownOpen = false;
+  }
+
+  attemptSave() {
+    if(!this.originalProfile) return;
+
+    const isNameChanged = this.userProfile.firstName !== this.originalProfile.firstName || this.userProfile.lastName !== this.originalProfile.lastName;
+    if(isNameChanged && !this.showPiiWarning) {
+      this.showPiiWarning = true;
+    } else {
+      this.onSave();
+    }
+  }
+
+  cancelWarning() {
+    this.showPiiWarning = false;
+    if(this.originalProfile) {
+      this.userProfile.timezone = this.originalProfile.firstName;
+      this.userProfile.lastName = this.originalProfile.lastName;
+    }
+  }
+
   onSave() {
     this.isLoading = false;
+    this.userService.updateUserProfile(this.userProfile).subscribe({
+      next: response => {
+        this.userProfile = { ...response };
+        this.toastService.show(AppConstants.TOAST_USER_PROFILE_SAVE_MSG, AppConstants.TOAST_TYPE.SUCCESS);
+        this.close.emit();
+      },
+      error: err => this.toastService.show(AppConstants.TOAST_USER_PROFILE_SAVE_FAILED, AppConstants.TOAST_TYPE.ERROR)
+    });
   }
 }

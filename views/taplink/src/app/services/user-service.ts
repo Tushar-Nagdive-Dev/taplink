@@ -11,6 +11,10 @@ export class UserService {
   apiClient = inject(ApiClientService);
 
   getUserProfile(): Observable<IUserProfile> {
-    return this.apiClient.get(APIs.USER.GET_USER_PROFILE);
+    return this.apiClient.get(APIs.USER.USER_PROFILE);
+  }
+
+  updateUserProfile(userProfile: IUserProfile): Observable<IUserProfile> {
+    return this.apiClient.put(APIs.USER.USER_PROFILE, userProfile);
   }
 }
