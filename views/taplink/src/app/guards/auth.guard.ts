@@ -1,26 +1,30 @@
-import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { map, catchError, of } from 'rxjs';
-
-import { AuthService } from '../services/auth-service';
+import { CanActivateFn, Router } from '@angular/router';
+import { map } from 'rxjs';
+import {PlatformService} from '../services/platform.service';
+import {AuthService} from '../services/auth-service';
 
 export const authGuard: CanActivateFn = () => {
 
-  const authService = inject(AuthService);
+  const platform = inject(PlatformService);
+
+  if (platform.isServer) {
+    return true;
+  }
+
+  const auth = inject(AuthService);
   const router = inject(Router);
 
-  return authService.verifySession().pipe(
+  if (auth.isAuthenticated()) {
+    return true;
+  }
 
-    map(authenticated =>
-      authenticated
+  return auth.verifySession().pipe(
+    map(ok =>
+      ok
         ? true
-        : router.createUrlTree(['/signin'])
-    ),
-
-    catchError(() =>
-      of(router.createUrlTree(['/signin']))
+        : router.parseUrl('/signin')
     )
-
   );
 
 };
