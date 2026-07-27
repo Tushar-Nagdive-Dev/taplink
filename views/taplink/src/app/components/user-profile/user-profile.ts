@@ -150,10 +150,10 @@ export class UserProfile implements OnInit, OnChanges{
     this.userService.updateUserProfile(this.userProfile).subscribe({
       next: response => {
         this.userProfile = { ...response };
-        this.toastService.show(AppConstants.TOAST_USER_PROFILE_SAVE_MSG, AppConstants.TOAST_TYPE.SUCCESS);
+        this.toastService.show(AppConstants.TOAST_MESSAGES.TOAST_USER_PROFILE_SAVE_MSG, AppConstants.TOAST_TYPE.SUCCESS);
         this.close.emit();
       },
-      error: err => this.toastService.show(AppConstants.TOAST_USER_PROFILE_SAVE_FAILED, AppConstants.TOAST_TYPE.ERROR)
+      error: err => this.toastService.show(AppConstants.TOAST_MESSAGES.TOAST_USER_PROFILE_SAVE_FAILED, AppConstants.TOAST_TYPE.ERROR)
     });
   }
 }

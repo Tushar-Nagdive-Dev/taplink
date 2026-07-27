@@ -12,5 +12,8 @@ export const APIs = Object.freeze({
   },
   USER : {
     USER_PROFILE : `${BASE}/api/v1/userprofile`,
+  },
+  USER_LINKS: {
+    LINKS : `${BASE}/api/v1/links`,
   }
 })

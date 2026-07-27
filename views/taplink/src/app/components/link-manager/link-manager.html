@@ -1,85 +1,111 @@
 @if (isLoading) {
-  <app-loader message="Signing you in..."></app-loader>
+  <app-loader message="Syncing with database..."></app-loader>
 }
-<div class="w-full max-w-3xl mx-auto pb-20 fade-in-up">
 
-  <button (click)="addNewLink()"
-          class="w-full mb-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-lg shadow-blue-500/30 hover:scale-[1.01] hover:shadow-blue-500/40">
-    <lucide-icon [img]="PlusIcon" class="w-5 h-5" strokeWidth="3"></lucide-icon>
-    <span>Add New Link</span>
-  </button>
+<div class="w-full max-w-5xl mx-auto pb-24 fade-in-up mt-4 px-4 sm:px-0">
 
-  <div *ngIf="isLoading" class="flex justify-center py-12">
-    <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-  </div>
-
-  <div *ngIf="!isLoading" cdkDropList (cdkDropListDropped)="drop($event)" class="flex flex-col gap-4">
-
-    <div *ngIf="myLinks.length === 0" class="text-center py-12 px-6 border-2 border-dashed border-slate-300 rounded-3xl bg-white/50 backdrop-blur-sm">
-      <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <lucide-icon [img]="LinkIcon" class="w-8 h-8 text-slate-400"></lucide-icon>
-      </div>
-      <h3 class="text-lg font-bold text-slate-700">No links yet</h3>
-      <p class="text-slate-500 mt-1">Click the button above to add your first link.</p>
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+    <div>
+      <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Link Manager</h2>
+      <p class="text-slate-500 text-sm mt-1">Organize, edit, and track all your destinations in one place.</p>
     </div>
 
-    <div *ngFor="let link of myLinks" cdkDrag
-         class="bg-white/90 backdrop-blur-xl rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/60 flex items-center gap-2 sm:gap-4 transition-all hover:shadow-md group relative overflow-hidden"
-         [ngClass]="{'opacity-60': !link.isActive}">
+    <button (click)="openAddModal()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 shrink-0">
+      <lucide-icon [img]="PlusIcon" class="w-5 h-5" strokeWidth="3"></lucide-icon>
+      <span>Add New Link</span>
+    </button>
+  </div>
 
-      <div cdkDragHandle class="cursor-grab active:cursor-grabbing p-2 text-slate-300 hover:text-slate-500 transition-colors shrink-0">
-        <lucide-icon [img]="GripIcon" class="w-5 h-5"></lucide-icon>
-      </div>
+  <div *ngIf="!isLoading" class="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white overflow-hidden">
 
-      <div class="flex-1 flex flex-col gap-2 min-w-0">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse whitespace-nowrap" cdkDropList (cdkDropListDropped)="drop($event)">
 
-        <div class="flex items-center">
-          <input type="text" [(ngModel)]="link.title" (change)="onLinkEdited(link)" placeholder="Title (e.g. My Portfolio)"
-                 class="font-bold text-slate-800 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500/20 rounded-lg px-2 py-1 w-full placeholder:font-normal placeholder:text-slate-400 transition-all truncate text-sm sm:text-base">
-        </div>
+        <thead>
+        <tr class="bg-slate-50/50 border-b border-slate-200/60 text-xs uppercase tracking-wider text-slate-500 font-bold">
+          <th class="p-4 w-12 text-center"></th>
+          <th class="p-4 min-w-[200px]">Link Title</th>
+          <th class="p-4 min-w-[250px]">Destination URL</th>
+          <th class="p-4 w-32">Status</th>
+          <th class="p-4 w-48 text-right pr-6">Actions</th>
+        </tr>
+        </thead>
 
-        <div class="flex items-center relative">
-          <lucide-icon [img]="LinkIcon" class="w-3.5 h-3.5 text-slate-400 absolute left-2 pointer-events-none"></lucide-icon>
-          <input type="text" [(ngModel)]="link.url" (change)="onLinkEdited(link)" placeholder="URL (e.g. https://...)"
-                 class="text-xs sm:text-sm text-slate-500 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500/20 rounded-lg pl-7 pr-2 py-1 w-full transition-all truncate">
-        </div>
+        <tbody class="divide-y divide-slate-100/80">
 
-      </div>
+        <tr *ngIf="myLinks.length === 0">
+          <td colspan="5" class="py-16 text-center">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-200">
+              <lucide-icon [img]="LinkIcon" class="w-8 h-8 text-slate-400"></lucide-icon>
+            </div>
+            <h3 class="text-lg font-bold text-slate-700">No links found</h3>
+            <p class="text-slate-500 text-sm mt-1">Click "Add New Link" to start building your profile.</p>
+          </td>
+        </tr>
 
-      <div class="flex items-center gap-1 sm:gap-3 shrink-0">
+        <tr *ngFor="let link of myLinks" cdkDrag
+            class="group hover:bg-white transition-colors duration-200 relative"
+            [ngClass]="{'opacity-60 grayscale-[15%]': !link.isActive}">
 
-        <button (click)="toggleFavorite(link)" class="p-2 rounded-xl transition-all"
-                [ngClass]="link.isFavorite ? 'text-amber-400 hover:bg-amber-50' : 'text-slate-300 hover:text-amber-400 hover:bg-slate-50'">
-          <lucide-icon [img]="StarIcon" class="w-5 h-5" [ngClass]="{'fill-amber-400': link.isFavorite}"></lucide-icon>
-        </button>
+          <td class="p-4 text-center">
+            <div cdkDragHandle class="cursor-grab active:cursor-grabbing text-slate-300 hover:text-blue-500 transition-colors inline-block p-1">
+              <lucide-icon [img]="GripIcon" class="w-5 h-5"></lucide-icon>
+            </div>
+          </td>
 
-        <button (click)="copyShortLink(link.shortCode)" class="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all hidden sm:block" title="Copy Short Link">
-          <lucide-icon [img]="CopyIcon" class="w-5 h-5"></lucide-icon>
-        </button>
+          <td class="p-4">
+            <input type="text" [(ngModel)]="link.title" (change)="onLinkEdited(link)" placeholder="Enter title..."
+                   class="w-full font-bold text-slate-800 text-sm outline-none bg-transparent hover:bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 rounded-lg px-2 py-1.5 transition-all placeholder:font-normal placeholder:text-slate-300">
+          </td>
 
-        <div class="w-px h-6 bg-slate-200 mx-1 hidden sm:block"></div>
+          <td class="p-4">
+            <div class="relative w-full flex items-center group/url">
+              <lucide-icon [img]="ExternalIcon" class="w-3.5 h-3.5 text-slate-400 absolute left-2 pointer-events-none group-hover/url:text-blue-400 transition-colors"></lucide-icon>
+              <input type="text" [(ngModel)]="link.url" (change)="onLinkEdited(link)" placeholder="https://..."
+                     class="w-full text-sm text-slate-500 outline-none bg-transparent hover:bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 rounded-lg pl-7 pr-2 py-1.5 transition-all placeholder:text-slate-300">
+            </div>
+          </td>
 
-        <label class="relative inline-flex items-center cursor-pointer mr-2 sm:mr-0">
-          <input type="checkbox" [(ngModel)]="link.isActive" (ngModelChange)="onLinkEdited(link)" class="sr-only peer">
-          <div class="w-10 h-5 sm:w-11 sm:h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
-        </label>
+          <td class="p-4">
+            <label class="relative inline-flex items-center cursor-pointer scale-90 origin-left">
+              <input type="checkbox" [(ngModel)]="link.isActive" (ngModelChange)="onLinkEdited(link)" class="sr-only peer">
+              <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
+            </label>
+          </td>
 
-        <button (click)="deleteLink(link.id)"
-                class="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 hidden sm:block">
-          <lucide-icon [img]="TrashIcon" class="w-5 h-5"></lucide-icon>
-        </button>
+          <td class="p-4 text-right pr-6 flex items-center justify-end gap-1">
 
-        <button class="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 rounded-xl transition-all sm:hidden block">
-          <lucide-icon [img]="MenuIcon" class="w-5 h-5"></lucide-icon>
-        </button>
+            <button (click)="toggleFavorite(link)" class="p-2 rounded-lg transition-all" title="Favorite"
+                    [ngClass]="link.isFavorite ? 'text-amber-400 hover:bg-amber-50' : 'text-slate-300 hover:text-amber-400 hover:bg-slate-50'">
+              <lucide-icon [img]="StarIcon" class="w-4 h-4" [ngClass]="{'fill-amber-400': link.isFavorite}"></lucide-icon>
+            </button>
 
-      </div>
+            <button (click)="copyShortLink(link.shortCode)" class="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all" title="Copy Short Link">
+              <lucide-icon [img]="CopyIcon" class="w-4 h-4"></lucide-icon>
+            </button>
 
-      <div *cdkDragPreview class="bg-white/95 backdrop-blur-xl rounded-3xl p-5 shadow-2xl border-2 border-blue-400 opacity-95 flex items-center justify-between w-[90%] max-w-2xl box-border">
-        <span class="font-bold text-slate-800">{{ link.title || 'New Link' }}</span>
-        <lucide-icon [img]="GripIcon" class="w-5 h-5 text-slate-300"></lucide-icon>
-      </div>
+            <div class="w-px h-5 bg-slate-200 mx-1"></div>
 
+            <button (click)="deleteLink(link.id)" class="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+              <lucide-icon [img]="TrashIcon" class="w-4 h-4"></lucide-icon>
+            </button>
+
+          </td>
+
+          <div *cdkDragPreview class="bg-white shadow-xl border border-blue-500 rounded-lg p-3 flex items-center justify-between opacity-95">
+            <span class="font-bold text-slate-800 text-sm">{{ link.title || 'Moving Row...' }}</span>
+            <lucide-icon [img]="GripIcon" class="w-4 h-4 text-slate-300"></lucide-icon>
+          </div>
+
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
+<app-add-link-modal
+  [isOpen]="isAddModalOpen"
+  (close)="isAddModalOpen = false"
+  (linkAdded)="onLinkAdded($event)">
+</app-add-link-modal>

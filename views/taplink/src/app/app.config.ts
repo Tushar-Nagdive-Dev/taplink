@@ -12,7 +12,6 @@ import {authInterceptor} from './interceptors/auth.interceptor';
 import {errorInterceptor} from './interceptors/error.interceptor';
 import {AuthService} from './services/auth-service';
 import {firstValueFrom} from 'rxjs';
-import {isBrowser} from './utils/platform.util';
 import {PlatformService} from './services/platform.service';
 
 export const appConfig: ApplicationConfig = {

@@ -1,42 +1,31 @@
-import {Component, OnInit} from '@angular/core';
-import {LinkService} from '../../services/link-service';
-import {ToastService} from '../../services/toast-service';
-import {Loader} from '../loader/loader';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule, NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CdkDragDrop, CdkDragPreview, CdkDropList, moveItemInArray, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
+import { LinkService } from '../../services/link-service';
+import { ToastService } from '../../services/toast-service';
+import { Loader } from '../loader/loader';
+import { AppConstants } from '../../constants/app.constants';
+import { ILink, ILinkRequest } from '../../interfaces/link.interface';
 import {
-  Copy,
-  ExternalLink,
-  GripVertical,
-  MoreHorizontal,
-  Plus,
-  Share2,
-  Star,
-  Trash2,
-  Link2OffIcon,
-  LucideAngularModule
+  Copy, ExternalLink, GripVertical, Plus, Star, Trash2, Link2OffIcon, LucideAngularModule
 } from 'lucide-angular';
-import {ILink, ILinkRequest} from '../../interfaces/link.interface';
-import {AppConstants} from '../../constants/app.constants';
-import {FormsModule} from '@angular/forms';
-import {CommonModule, NgClass} from '@angular/common';
-import {CdkDragDrop, CdkDragPreview, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {AddLinkModal} from '../add-link-modal/add-link-modal';
 
 @Component({
   selector: 'app-link-manager',
+  standalone: true,
   imports: [
-    Loader,
-    LucideAngularModule,
-    FormsModule,
-    NgClass,
-    CdkDropList,
-    CommonModule,
-    CdkDragPreview
+    CommonModule, FormsModule, NgClass, Loader, LucideAngularModule,
+    CdkDropList, CdkDrag, CdkDragHandle, CdkDragPreview, AddLinkModal
   ],
   templateUrl: './link-manager.html',
   styleUrl: './link-manager.scss',
 })
-export class LinkManager implements OnInit{
-
+export class LinkManager implements OnInit {
   isLoading: boolean = false;
+  isAddModalOpen = false;
+
   // --- Icons ---
   readonly GripIcon = GripVertical;
   readonly TrashIcon = Trash2;
@@ -45,8 +34,7 @@ export class LinkManager implements OnInit{
   readonly ExternalIcon = ExternalLink;
   readonly StarIcon = Star;
   readonly CopyIcon = Copy;
-  readonly ShareIcon = Share2;
-  readonly MenuIcon = MoreHorizontal;
+
   myLinks: ILink[] = [];
 
   constructor(
@@ -55,10 +43,9 @@ export class LinkManager implements OnInit{
   ) {}
 
   ngOnInit(): void {
-
+    this.loadLinks();
   }
 
-  // --- READ ---
   loadLinks() {
     this.isLoading = true;
     this.linkService.getAllLinks().subscribe({
@@ -66,32 +53,22 @@ export class LinkManager implements OnInit{
         this.myLinks = links;
         this.isLoading = false;
       },
-      error: (err) => {
-        this.toastService.show('Failed to load links', AppConstants.TOAST_TYPE.ERROR);
+      error: () => {
+        this.toastService.show(AppConstants.TOAST_MESSAGES.FAILED_TO_LOAD_LINKS, AppConstants.TOAST_TYPE.ERROR);
         this.isLoading = false;
       }
     });
   }
 
-  // --- CREATE ---
-  addNewLink() {
-    const newLinkReq: ILinkRequest = {
-      title: 'New Link',
-      url: '',
-      isActive: true
-    };
-
-    this.linkService.createLink(newLinkReq).subscribe({
-      next: (savedLink) => {
-        // Add the newly created link (with real DB ID and shortCode) to the top
-        this.myLinks.unshift(savedLink);
-        this.toastService.show('Link created successfully', AppConstants.TOAST_TYPE.SUCCESS);
-      },
-      error: () => this.toastService.show('Could not create link', AppConstants.TOAST_TYPE.ERROR)
-    });
+  openAddModal() {
+    this.isAddModalOpen = true;
   }
 
-  // --- UPDATE (Auto-Save) ---
+  // Receives the new link from the modal and puts it in the table
+  onLinkAdded(newLink: ILink) {
+    this.myLinks.unshift(newLink);
+  }
+
   onLinkEdited(link: ILink) {
     const updateReq: ILinkRequest = {
       title: link.title,
@@ -100,14 +77,11 @@ export class LinkManager implements OnInit{
     };
 
     this.linkService.updateLink(link.id, updateReq).subscribe({
-      next: () => {
-        console.log(`Link ${link.id} auto-saved.`);
-      },
-      error: () => this.toastService.show('Failed to save changes')
+      next: () => console.log(`Link ${link.id} saved.`),
+      error: () => this.toastService.show('Failed to save changes', AppConstants.TOAST_TYPE.ERROR)
     });
   }
 
-  // --- DELETE ---
   deleteLink(id: number) {
     if(!confirm('Are you sure you want to delete this link?')) return;
 
@@ -120,20 +94,19 @@ export class LinkManager implements OnInit{
     });
   }
 
-  // --- UI Helpers ---
   drop(event: CdkDragDrop<ILink[]>) {
     moveItemInArray(this.myLinks, event.previousIndex, event.currentIndex);
-    // Note: Phase 2 will add the backend API call here to save the new positions!
+    // Note: Backend persistence for reordering will go here later
   }
 
   toggleFavorite(link: ILink) {
     link.isFavorite = !link.isFavorite;
-    // UI toggle only for now
+    // Note: Update logic for presentation data will go here later
   }
 
   copyShortLink(shortCode: string) {
-    const fullUrl = `https://tap.link/${shortCode}`;
-    navigator.clipboard.writeText(fullUrl);
+    if (!shortCode) return;
+    navigator.clipboard.writeText(`https://tap.link/${shortCode}`);
     this.toastService.show('Copied to clipboard!', AppConstants.TOAST_TYPE.INFO);
   }
 }
