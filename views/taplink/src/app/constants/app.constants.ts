@@ -11,7 +11,12 @@ export const AppConstants = Object.freeze({
     TOAST_USER_PROFILE_SAVE_FAILED: 'User profile update failed',
     LINK_ADDED_SUCCESSFULLY : 'Link added successfully!',
     FAILED_TO_CREATE_LINK : 'Failed to create link',
-    FAILED_TO_LOAD_LINKS : 'Failed to load links'
+    FAILED_TO_LOAD_LINKS : 'Failed to load links',
+    COPIED : 'Copied to clipboard!',
+    FAILED_TO_DELETE_LINK : 'Failed to delete link',
+    ARE_SURE_YOU_WANT_T0_DELETE_LINK : 'Are you sure you want to delete this link?',
+    LINK_DELETED : 'Link deleted',
+    FAILED_TO_SAVE_CHANGES : 'Failed to save changes'
   },
   AUTH_KEY : 'taplink_is_auth',
   SOMETHING_WENT_WRONG : 'Something went wrong while verifying your credentials.',

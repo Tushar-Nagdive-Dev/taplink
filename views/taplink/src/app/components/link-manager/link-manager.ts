@@ -78,19 +78,19 @@ export class LinkManager implements OnInit {
 
     this.linkService.updateLink(link.id, updateReq).subscribe({
       next: () => console.log(`Link ${link.id} saved.`),
-      error: () => this.toastService.show('Failed to save changes', AppConstants.TOAST_TYPE.ERROR)
+      error: () => this.toastService.show(AppConstants.TOAST_MESSAGES.FAILED_TO_SAVE_CHANGES, AppConstants.TOAST_TYPE.ERROR)
     });
   }
 
   deleteLink(id: number) {
-    if(!confirm('Are you sure you want to delete this link?')) return;
+    if(!confirm(AppConstants.TOAST_MESSAGES.ARE_SURE_YOU_WANT_T0_DELETE_LINK)) return;
 
     this.linkService.deleteLink(id).subscribe({
       next: () => {
         this.myLinks = this.myLinks.filter(link => link.id !== id);
-        this.toastService.show('Link deleted', AppConstants.TOAST_TYPE.SUCCESS);
+        this.toastService.show(AppConstants.TOAST_MESSAGES.LINK_DELETED, AppConstants.TOAST_TYPE.SUCCESS);
       },
-      error: () => this.toastService.show('Failed to delete link', AppConstants.TOAST_TYPE.ERROR)
+      error: () => this.toastService.show(AppConstants.TOAST_MESSAGES.FAILED_TO_DELETE_LINK, AppConstants.TOAST_TYPE.ERROR)
     });
   }
 
@@ -107,6 +107,6 @@ export class LinkManager implements OnInit {
   copyShortLink(shortCode: string) {
     if (!shortCode) return;
     navigator.clipboard.writeText(`https://tap.link/${shortCode}`);
-    this.toastService.show('Copied to clipboard!', AppConstants.TOAST_TYPE.INFO);
+    this.toastService.show(AppConstants.TOAST_MESSAGES.COPIED, AppConstants.TOAST_TYPE.INFO);
   }
 }
