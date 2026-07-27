@@ -6,12 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.co.taplink.users.modals.AuthResponse;
 import org.co.taplink.users.modals.LoginRequest;
 import org.co.taplink.users.modals.RegisterRequest;
+import org.co.taplink.users.modals.SessionResponse;
 import org.co.taplink.users.services.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.co.taplink.utils.TapLinkAppConstants.API_PATHS.AUTH_PATH;
 
@@ -35,5 +33,10 @@ public class AuthController {
     @PostMapping("logout")
     public ResponseEntity<@NonNull AuthResponse> logout(HttpServletRequest request) {
         return this.authService.logout(request);
+    }
+
+    @GetMapping("session")
+    public ResponseEntity<@NonNull SessionResponse> session(HttpServletRequest request) {
+        return this.authService.session();
     }
 }

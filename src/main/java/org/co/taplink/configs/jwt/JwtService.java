@@ -1,9 +1,12 @@
 package org.co.taplink.configs.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.co.taplink.users.entities.UserSession;
 import org.co.taplink.users.entities.Users;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,10 +18,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
+
+    private static final String CLAIM_USER_ID = "userId";
+    private static final String CLAIM_ROLES = "roles";
+    private static final String CLAIM_SESSION_ID = "sid";
 
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
@@ -26,57 +34,120 @@ public class JwtService {
     @Value("${application.security.jwt.expiration}")
     private Long jwtExpiration;
 
+    /**
+     * Generates a signed JWT for the authenticated user.
+     */
+    public String generateToken(Users user, UserSession session) {
+
+        Map<String, Object> claims = new HashMap<>(3);
+
+        List<String> roles = user.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        claims.put(CLAIM_USER_ID, user.getId());
+        claims.put(CLAIM_ROLES, roles);
+        claims.put(CLAIM_SESSION_ID, session.getSessionId().toString());
+
+        return buildToken(claims, user);
+    }
+
+    /**
+     * Returns the username (JWT subject).
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    /**
+     * Returns the UserSession UUID stored inside the JWT.
+     */
+    public UUID extractSessionId(String token) {
+
+        String sid = extractClaim(token,
+                claims -> claims.get(CLAIM_SESSION_ID, String.class));
+
+        if (sid == null || sid.isBlank()) {
+            throw new JwtException("JWT does not contain a session id.");
+        }
+
+        return UUID.fromString(sid);
     }
 
-    public String generateToken(Users userDetails) {
-        Map<String, Object> extraClaims = new HashMap<>();
-        // Extract the strings from the GrantedAuthority stream we built in the Users entity
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
-        extraClaims.put("roles", roles);
-        extraClaims.put("userId", userDetails.getId());
-
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    /**
+     * Returns the user id stored inside the JWT.
+     */
+    public Long extractUserId(String token) {
+        return extractClaim(token,
+                claims -> claims.get(CLAIM_USER_ID, Long.class));
     }
 
-    private String buildToken(Map<String, Object> extraClaims, Users userDetails, Long expiration) {
+    /**
+     * Extracts any claim from the JWT.
+     */
+    public <T> T extractClaim(
+            String token,
+            Function<Claims, T> claimsResolver) {
+
+        return claimsResolver.apply(extractAllClaims(token));
+    }
+
+    /**
+     * Validates the token against the authenticated user.
+     */
+    public boolean isTokenValid(
+            String token,
+            UserDetails userDetails) {
+
+        String username = extractUsername(token);
+
+        return username.equals(userDetails.getUsername())
+                && !isTokenExpired(token);
+    }
+
+    /**
+     * Creates the signed JWT.
+     */
+    private String buildToken(
+            Map<String, Object> claims,
+            Users user) {
+
+        Date now = new Date();
+
         return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .setClaims(claims)
+                .setSubject(user.getUsername())
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + jwtExpiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    /**
+     * Parses and validates the JWT.
+     */
+    private Claims extractAllClaims(String token) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return extractClaim(token, Claims::getExpiration)
+                .before(new Date());
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
+    /**
+     * Returns the signing key.
+     */
+    private Key getSigningKey() {
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
-    }
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 
-    private Key getSignInKey() {
-        byte[] keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 }

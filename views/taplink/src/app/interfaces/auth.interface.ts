@@ -14,3 +14,13 @@ export interface ILoginRequest {
 export interface IAuthResponse {
   authMessage: string;
 }
+
+export interface ISessionResponse {
+  authenticated: boolean;
+  userId: string;
+  username: string;
+  email: string;
+  fistName: string;
+  lastName: string;
+  roles: string[];
+}

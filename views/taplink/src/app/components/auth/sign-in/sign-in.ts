@@ -9,6 +9,7 @@ import {Loader} from '../../loader/loader';
 import {ToastService} from '../../../services/toast-service';
 import {AppConstants} from '../../../constants/app.constants';
 import {Toast} from '../../toast/toast';
+import {switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-sign-in',
@@ -57,8 +58,6 @@ export class SignIn implements OnInit {
     this.authService.login(requestPayload).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.authService.setLocalState();
-        // Secure HttpOnly cookie is set! Send them to the dashboard.
         this.toastService.show(AppConstants.LOGIN_SUCCESSFUL, AppConstants.TOAST_TYPE.SUCCESS);
         this.router.navigate(['/taplink-dashboard']);
       },

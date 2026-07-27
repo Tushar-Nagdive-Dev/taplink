@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Link, Palette, BarChart3, Settings, LogOut, PanelLeft, PanelRight, Bell } from 'lucide-angular';
-import {AuthService} from '../../services/auth-service';
-import {UserProfile} from '../user-profile/user-profile';
+import { LucideAngularModule, Link, Palette, QrCode, LogOut, PanelLeft, PanelRight, Bell } from 'lucide-angular';
+import { AuthService } from '../../services/auth-service';
+import { UserProfile } from '../user-profile/user-profile';
 
 @Component({
   selector: 'app-taplink-dashboard',
@@ -24,18 +24,17 @@ export class TaplinkDashboard {
   // --- Icons ---
   readonly LinkIcon = Link;
   readonly PaletteIcon = Palette;
-  readonly BarChartIcon = BarChart3;
-  readonly SettingsIcon = Settings;
+  readonly QrCodeIcon = QrCode; // Replaced Analytics/Settings with QR Code
   readonly LogOutIcon = LogOut;
   readonly PanelLeftIcon = PanelLeft;
   readonly PanelRightIcon = PanelRight;
   readonly BellIcon = Bell;
 
+  // --- Cleaned up Menu ---
   menuItems = [
-    { label: 'My Links', icon: this.LinkIcon, route: '/dashboard/links' },
-    { label: 'Appearance', icon: this.PaletteIcon, route: '/dashboard/appearance' },
-    { label: 'Analytics', icon: this.BarChartIcon, route: '/dashboard/analytics' },
-    { label: 'Settings', icon: this.SettingsIcon, route: '/dashboard/settings' }
+    { label: 'My Links', icon: this.LinkIcon, route: '/taplink-dashboard/links' },
+    { label: 'Appearance', icon: this.PaletteIcon, route: '/taplink-dashboard/appearance' },
+    { label: 'Share QR', icon: this.QrCodeIcon, route: '/taplink-dashboard/qr' }
   ];
 
   // --- Toggle Methods ---

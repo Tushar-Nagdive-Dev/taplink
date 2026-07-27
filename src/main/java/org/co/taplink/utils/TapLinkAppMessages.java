@@ -12,6 +12,7 @@ public final class TapLinkAppMessages {
         public static final String ROLE_NOT_FOUND = "Critical Error: System role '%s' not found in the database.";
         public static final String INVALID_USER = "Authentication failed for user: '%s'.";
         public static final String SESSION_EXPIRED = "Session expired. Please login again.";
+        public static final String USER_SESSION_NOT_FOUND = "User's session not found";
 
         // Static messages remain normal
         public static final String LOGIN_SUCCESS = "Successfully logged in.";

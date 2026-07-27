@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.co.taplink.configs.BaseEntity;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,9 +20,22 @@ public class UserSession extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "session_id", nullable = false, unique = true, updatable = false)
+    private UUID sessionId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+
+    @Column(name = "login_at", nullable = false)
+    private LocalDateTime loginAt;
+
+    @Column(name = "logout_at")
+    private LocalDateTime logoutAt;
+
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 
     @Column(name = "os_type", length = 50)
     private String osType;

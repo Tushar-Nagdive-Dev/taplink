@@ -1,66 +1,61 @@
-import {inject, Injectable, PLATFORM_ID} from '@angular/core';
+import {computed, inject, Injectable, signal} from '@angular/core';
 import {ApiClientService} from './api-client-service';
-import {IAuthResponse, ILoginRequest, IRegisterRequest} from '../interfaces/auth.interface';
-import {catchError, Observable, of, tap} from 'rxjs';
+import {IAuthResponse, ILoginRequest, IRegisterRequest, ISessionResponse} from '../interfaces/auth.interface';
+import {catchError, map, Observable, of, tap} from 'rxjs';
 import {APIs} from '../constants/api.constants';
-import {AppConstants} from '../constants/app.constants';
-import {isPlatformBrowser} from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   apiClient = inject(ApiClientService);
-  private platformId = inject(PLATFORM_ID);
-
-  setLocalState() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(AppConstants.AUTH_KEY, 'true');
-    }
-  }
-
-  clearLocalState() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(AppConstants.AUTH_KEY);
-    }
-  }
-
-  getIsAuthenticated() {
-    if(!isPlatformBrowser(this.platformId)) {
-      return false;
-    }
-    return localStorage.getItem(AppConstants.AUTH_KEY) === 'true';
-  }
+  /**
+   * Current authenticated session.
+   * null = not authenticated.
+   */
+  private readonly authState = signal<ISessionResponse | null>(null);
+  /**
+   * Read-only session.
+   */
+  readonly session = this.authState.asReadonly();
+  /**
+   * True if user is authenticated.
+   */
+  readonly isAuthenticated = computed(() => this.authState() !== null);
 
   register(request: IRegisterRequest): Observable<IAuthResponse> {
-    // Proactively clear any residual state before initiating registration
-    this.clearLocalState();
-    return this.apiClient.post<IAuthResponse>(APIs.AUTH.REGISTER, request).pipe(
-      tap(() => {
-        this.setLocalState();
-      })
-    );
+    return this.apiClient.post<IAuthResponse>(APIs.AUTH.REGISTER, request);
   }
 
   login(request: ILoginRequest): Observable<IAuthResponse> {
-    // Proactively clear any residual state before initiating login
-    this.clearLocalState();
-    return this.apiClient.post<IAuthResponse>(APIs.AUTH.LOGIN, request).pipe(
-      tap(() => {
-        this.setLocalState();
+    return this.apiClient.post<IAuthResponse>(APIs.AUTH.LOGIN, request);
+  }
+
+  logout(): Observable<IAuthResponse | null> {
+    return this.apiClient.post<IAuthResponse>(APIs.AUTH.LOGOUT, {}).pipe(tap(() => {
+      this.clearSession();
+    }), catchError(() => {
+      this.clearSession();
+      return of(null);
+    }));
+  }
+
+  verifySession(): Observable<boolean> {
+    return this.apiClient.get<ISessionResponse>(APIs.AUTH.USER_SESSION).pipe(
+      tap(session => this.authState.set(session)),
+      map(() => true),
+      catchError(() => {
+        this.clearSession();
+        return of(false);
       })
     );
   }
 
-  logout(): Observable<any> {
-    return this.apiClient.post<any>(APIs.AUTH.LOGOUT, {}).pipe(
-      tap(() => {
-        this.clearLocalState();
-      }),
-      catchError((err) => {
-        this.clearLocalState();
-        return of(null);
-      })
-    );
+  /**
+   * Clears client-side authentication state.
+   */
+  clearSession(): void {
+    this.authState.set(null);
   }
+
 }

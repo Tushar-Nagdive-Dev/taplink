@@ -4,31 +4,44 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.co.taplink.configs.exception.UserSessionNotFoundException;
 import org.co.taplink.configs.jwt.JwtService;
 import org.co.taplink.configs.security.SecurityUtils;
 import org.co.taplink.configs.security.TokenBlocklistService;
 import org.co.taplink.users.entities.Roles;
 import org.co.taplink.users.entities.UserProfile;
+import org.co.taplink.users.entities.UserSession;
 import org.co.taplink.users.entities.Users;
 import org.co.taplink.users.modals.AuthResponse;
 import org.co.taplink.users.modals.LoginRequest;
 import org.co.taplink.users.modals.RegisterRequest;
+import org.co.taplink.users.modals.SessionResponse;
 import org.co.taplink.users.repository.RolesRepository;
 import org.co.taplink.users.repository.UsersRepository;
 import org.co.taplink.users.services.AuthService;
 import org.co.taplink.users.services.UserSessionService;
+import org.co.taplink.utils.CookieUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import static org.co.taplink.utils.TapLinkAppConstants.*;
 import static org.co.taplink.utils.TapLinkAppMessages.Auth.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -66,14 +79,7 @@ public class AuthServiceImpl implements AuthService {
 
         this.usersRepository.save(user);
 
-        String jwtToken = jwtService.generateToken(user);
-        ResponseCookie jwtCookie = ResponseCookie.from(TAPLINK_TOKEN, jwtToken).httpOnly(true)
-                .secure(false) //Set to TRUE in production when you have HTTPS!
-                .path(FORWARD_SLASH).maxAge(EXPIRE_7_DAYS) // Expires in 7 days
-                .sameSite(STRICT).build(); // Protects against Cross-Site Request Forgery (CSRF)
-
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new AuthResponse(REGISTER_SUCCESS));
+        return ResponseEntity.ok(new AuthResponse(REGISTER_SUCCESS));
     }
 
     @Override
@@ -81,9 +87,9 @@ public class AuthServiceImpl implements AuthService {
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         Users user = this.usersRepository.findByUsernameWithRoles(request.username()).orElseThrow(() -> new IllegalArgumentException(INVALID_USER));
 
-        this.sessionService.createSession(user, this.request);
+        UserSession userSession = this.sessionService.createSession(user, this.request);
 
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user, userSession);
         ResponseCookie jwtCookie = ResponseCookie.from(TAPLINK_TOKEN, jwtToken).httpOnly(true)
                 .secure(false) //Set to TRUE in production when you have HTTPS!
                 .path(FORWARD_SLASH).maxAge(EXPIRE_7_DAYS) // Expires in 7 days
@@ -94,27 +100,56 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<@NonNull AuthResponse> logout(HttpServletRequest request) {
-        Users user = SecurityUtils.getCurrentUser();
-        this.sessionService.deleteSessionByUser(user);
-        String tokenToKill = null;
-        if(request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if(TAPLINK_TOKEN.equals(cookie.getName())) {
-                    tokenToKill = cookie.getValue();
-                    break;
-                }
-            }
+        String jwt = CookieUtils.getCookiesValue(request, TAPLINK_TOKEN);
+        if (jwt != null) {
+            UUID sessionId = jwtService.extractSessionId(jwt);
+            sessionService.deactivateSession(sessionId);
+            tokenBlocklistService.blockToken(jwt);
         }
-        if(tokenToKill != null && !tokenToKill.isEmpty()) {
-            tokenBlocklistService.blockToken(tokenToKill);
-        }
-        ResponseCookie deleteCookie = ResponseCookie.from(TAPLINK_TOKEN, EMPTY_STRING)
-                .httpOnly(true).secure(false)
-                .path(FORWARD_SLASH).maxAge(0)
-                .sameSite(STRICT).build();
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body(new AuthResponse(SUCCESSFUL_LOGOUT));
+        ResponseCookie deleteCookie = ResponseCookie.from(TAPLINK_TOKEN, EMPTY_STRING)
+                .httpOnly(true).secure(false).path(FORWARD_SLASH)
+                .sameSite(STRICT).maxAge(0).build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).body(new AuthResponse(SUCCESSFUL_LOGOUT));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<SessionResponse> session() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("============= SESSION ENDPOINT =============");
+        log.info("Authentication : {}", authentication);
+
+        if (authentication != null) {
+            log.info("Authentication Type : {}", authentication.getClass().getName());
+            log.info("Principal Type      : {}", authentication.getPrincipal().getClass().getName());
+            log.info("Principal           : {}", authentication.getPrincipal());
+            log.info("Authenticated       : {}", authentication.isAuthenticated());
+        }
+        Users user = SecurityUtils.getCurrentUser();
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        SessionResponse response = new SessionResponse(
+                true,
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getUserProfile().getFirstName(),
+                user.getUserProfile().getLastName(),
+                user.getAuthorities()
+                        .stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toSet())
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

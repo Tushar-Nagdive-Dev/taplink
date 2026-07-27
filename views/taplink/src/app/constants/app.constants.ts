@@ -17,4 +17,5 @@ export const AppConstants = Object.freeze({
   TO: 'to',
   TOAST_USER_PROFILE_SAVE_MSG: 'User profile updated successfully.',
   TOAST_USER_PROFILE_SAVE_FAILED: 'User profile update failed',
+  FAILED_LOAD_LINKS : 'Failed to load links'
 });
