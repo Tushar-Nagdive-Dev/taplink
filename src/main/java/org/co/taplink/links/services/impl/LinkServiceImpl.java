@@ -89,16 +89,34 @@ public class LinkServiceImpl implements LinkService {
         log.info("Updating link with ID {}", linkId);
         Users user = this.userRepository.findByUsernameWithRoles(username)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(USER_NOT_FOUND, username)));
+
+        // 1. Update Core UserLink
         UserLinks userLink = this.userLinkRepository.findByIdAndUserId(linkId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException(String.format(NOT_FOUND, linkId)));
-        userLink.setTitle(request.title());
-        userLink.setUrl(request.url());
-        if(request.isActive() != null) {
-            userLink.setIsActive(request.isActive());
-        }
 
-        return mapToResponse(this.userLinkRepository.save(userLink));
-    }
+        if (request.title() != null) userLink.setTitle(request.title());
+        if (request.url() != null) userLink.setUrl(request.url());
+        if (request.isActive() != null) userLink.setIsActive(request.isActive());
+
+        this.userLinkRepository.save(userLink);
+
+        // 2. Update Routing Data
+        this.linkRoutingRepository.findById(linkId).ifPresent(routing -> {
+            if (request.customSlug() != null) routing.setCustomSlug(request.customSlug());
+            if (request.expiresAt() != null) routing.setExpiresAt(request.expiresAt());
+            this.linkRoutingRepository.save(routing);
+        });
+
+        // 3. Update Presentation Data
+        this.linkPresentationRepository.findById(linkId).ifPresent(presentation -> {
+            if (request.label() != null) presentation.setLabel(request.label());
+            if (request.colorCode() != null) presentation.setColorCode(request.colorCode());
+            if (request.isFavorite() != null) presentation.setIsFavorite(request.isFavorite());
+            this.linkPresentationRepository.save(presentation);
+        });
+
+        return mapToResponse(userLink);
+    } 
 
     @Override
     @Transactional
@@ -110,10 +128,14 @@ public class LinkServiceImpl implements LinkService {
         this.userLinkRepository.delete(userLink);
     }
 
-    // Helper method to keep our controllers clean by strictly returning the DTO
+    // Updated to pull from all three repositories securely
     private LinkResponse mapToResponse(UserLinks link) {
         String createdAtStr = link.getCreatedAt() != null ?
                 link.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "Unknown";
+
+        // Safely fetch related entities (they share the exact same ID due to @MapsId)
+        LinkRouting routing = this.linkRoutingRepository.findById(link.getId()).orElse(null);
+        LinkPresentation presentation = this.linkPresentationRepository.findById(link.getId()).orElse(null);
 
         return new LinkResponse(
                 link.getId(),
@@ -121,6 +143,12 @@ public class LinkServiceImpl implements LinkService {
                 link.getUrl(),
                 link.getPosition(),
                 link.getIsActive(),
+                routing != null ? routing.getShortCode() : null,
+                routing != null ? routing.getCustomSlug() : null,
+                routing != null ? routing.getExpiresAt() : null,
+                presentation != null ? presentation.getIsFavorite() : false,
+                presentation != null ? presentation.getColorCode() : "#FFFFFF",
+                presentation != null ? presentation.getLabel() : link.getTitle(),
                 createdAtStr
         );
     }

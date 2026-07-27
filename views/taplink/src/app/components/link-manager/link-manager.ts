@@ -7,33 +7,44 @@ import { ToastService } from '../../services/toast-service';
 import { Loader } from '../loader/loader';
 import { AppConstants } from '../../constants/app.constants';
 import { ILink, ILinkRequest } from '../../interfaces/link.interface';
+import { AddLinkModal } from '../add-link-modal/add-link-modal';
+import { EditLinkModal } from '../edit-link-modal/edit-link-modal';
 import {
-  Copy, ExternalLink, GripVertical, Plus, Star, Trash2, Link2OffIcon, LucideAngularModule
+  Copy, ExternalLink, GripVertical, Plus, Star, Trash2, Link2OffIcon,
+  Tag, Calendar, Palette, Link as LinkIcon, Edit2, LucideAngularModule
 } from 'lucide-angular';
-import {AddLinkModal} from '../add-link-modal/add-link-modal';
 
 @Component({
   selector: 'app-link-manager',
   standalone: true,
   imports: [
     CommonModule, FormsModule, NgClass, Loader, LucideAngularModule,
-    CdkDropList, CdkDrag, CdkDragHandle, CdkDragPreview, AddLinkModal
+    CdkDropList, CdkDrag, CdkDragHandle, CdkDragPreview, AddLinkModal, EditLinkModal
   ],
   templateUrl: './link-manager.html',
   styleUrl: './link-manager.scss',
 })
 export class LinkManager implements OnInit {
   isLoading: boolean = false;
-  isAddModalOpen = false;
+  isAddModalOpen: boolean = false;
+  isEditModalOpen: boolean = false;
+
+  // We will pass this to the modal when editing an existing link
+  selectedLinkToEdit: ILink | null = null;
 
   // --- Icons ---
   readonly GripIcon = GripVertical;
   readonly TrashIcon = Trash2;
   readonly PlusIcon = Plus;
-  readonly LinkIcon = Link2OffIcon;
+  readonly LinkOffIcon = Link2OffIcon;
+  readonly LinkIcon = LinkIcon;
   readonly ExternalIcon = ExternalLink;
   readonly StarIcon = Star;
   readonly CopyIcon = Copy;
+  readonly TagIcon = Tag;
+  readonly CalendarIcon = Calendar;
+  readonly PaletteIcon = Palette;
+  readonly EditIcon = Edit2;
 
   myLinks: ILink[] = [];
 
@@ -54,7 +65,7 @@ export class LinkManager implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.toastService.show(AppConstants.TOAST_MESSAGES.FAILED_TO_LOAD_LINKS, AppConstants.TOAST_TYPE.ERROR);
+        this.toastService.show('Failed to load links', AppConstants.TOAST_TYPE.ERROR);
         this.isLoading = false;
       }
     });
@@ -64,49 +75,68 @@ export class LinkManager implements OnInit {
     this.isAddModalOpen = true;
   }
 
-  // Receives the new link from the modal and puts it in the table
+  openEditModal(link: ILink) {
+    this.selectedLinkToEdit = link;
+    this.isEditModalOpen = true; // Fixed: Opens the Edit Modal instead of Add Modal
+  }
+
   onLinkAdded(newLink: ILink) {
+    // Instantly add the new link to the top of the table
     this.myLinks.unshift(newLink);
   }
 
-  onLinkEdited(link: ILink) {
+  onLinkUpdated(updatedLink: ILink) {
+    // Find the edited link in our array and replace it with the fresh data from the server
+    const index = this.myLinks.findIndex(l => l.id === updatedLink.id);
+    if (index !== -1) {
+      this.myLinks[index] = updatedLink;
+    }
+  }
+
+  // Used only for the quick-toggle switches (Active & Favorite)
+  quickSaveStatus(link: ILink) {
     const updateReq: ILinkRequest = {
       title: link.title,
       url: link.url,
-      isActive: link.isActive
+      isActive: link.isActive,
+      label: link.label,
+      colorCode: link.colorCode,
+      customSlug: link.customSlug,
+      expiresAt: link.expiresAt,
+      isFavorite: link.isFavorite
     };
 
     this.linkService.updateLink(link.id, updateReq).subscribe({
-      next: () => console.log(`Link ${link.id} saved.`),
-      error: () => this.toastService.show(AppConstants.TOAST_MESSAGES.FAILED_TO_SAVE_CHANGES, AppConstants.TOAST_TYPE.ERROR)
+      next: () => console.log(`Quick-saved link ${link.id}`),
+      error: () => this.toastService.show('Failed to save status', AppConstants.TOAST_TYPE.ERROR)
     });
   }
 
+  toggleFavorite(link: ILink) {
+    link.isFavorite = !link.isFavorite;
+    this.quickSaveStatus(link);
+  }
+
   deleteLink(id: number) {
-    if(!confirm(AppConstants.TOAST_MESSAGES.ARE_SURE_YOU_WANT_T0_DELETE_LINK)) return;
+    if(!confirm('Are you sure you want to delete this link?')) return;
 
     this.linkService.deleteLink(id).subscribe({
       next: () => {
         this.myLinks = this.myLinks.filter(link => link.id !== id);
-        this.toastService.show(AppConstants.TOAST_MESSAGES.LINK_DELETED, AppConstants.TOAST_TYPE.SUCCESS);
+        this.toastService.show('Link deleted', AppConstants.TOAST_TYPE.SUCCESS);
       },
-      error: () => this.toastService.show(AppConstants.TOAST_MESSAGES.FAILED_TO_DELETE_LINK, AppConstants.TOAST_TYPE.ERROR)
+      error: () => this.toastService.show('Failed to delete link', AppConstants.TOAST_TYPE.ERROR)
     });
   }
 
   drop(event: CdkDragDrop<ILink[]>) {
     moveItemInArray(this.myLinks, event.previousIndex, event.currentIndex);
-    // Note: Backend persistence for reordering will go here later
   }
 
-  toggleFavorite(link: ILink) {
-    link.isFavorite = !link.isFavorite;
-    // Note: Update logic for presentation data will go here later
-  }
-
-  copyShortLink(shortCode: string) {
-    if (!shortCode) return;
-    navigator.clipboard.writeText(`https://tap.link/${shortCode}`);
-    this.toastService.show(AppConstants.TOAST_MESSAGES.COPIED, AppConstants.TOAST_TYPE.INFO);
+  copyShortLink(shortCode: string, customSlug?: string) {
+    const activeCode = customSlug ? customSlug : shortCode;
+    if (!activeCode) return;
+    navigator.clipboard.writeText(`https://tap.link/${activeCode}`);
+    this.toastService.show('Copied to clipboard!', AppConstants.TOAST_TYPE.INFO);
   }
 }

@@ -6,6 +6,11 @@ export interface ILinkRequest {
   title: string;
   url: string;
   isActive: boolean;
+  label?: string;
+  colorCode?: string;
+  customSlug?: string;
+  expiresAt?: string;
+  isFavorite?: boolean; // <-- Added this!
 }
 
 /**
