@@ -132,7 +132,7 @@ export class LinkManager implements OnInit {
 
     this.linkService.patchFavorite(link.id, isFavorite).subscribe({
       next: (updatedLink) => {
-        console.log(`Link ${link.id} favorite patched to ${isFavorite}`);
+        console.log(AppConstants.TOAST_MESSAGES.LINK_FAVORITE_PATCHED.replace(AppConstants.REPLACEMENTS.ID, String(link.id)).replace(AppConstants.REPLACEMENTS.IS_FAVORITE, String(isFavorite)));
         link.isFavorite = updatedLink.isFavorite;
       },
       error: () => {
@@ -175,7 +175,7 @@ export class LinkManager implements OnInit {
   copyShortLink(shortCode: string, customSlug?: string) {
     const activeCode = customSlug ? customSlug : shortCode;
     if (!activeCode) return;
-    navigator.clipboard.writeText(`https://tap.link/${activeCode}`);
+    navigator.clipboard.writeText(AppConstants.URLs.HTTPS_TAP_LINKS.replace(AppConstants.REPLACEMENTS.ACTIVE_CODE, String(activeCode)));
     this.toastService.show(AppConstants.TOAST_MESSAGES.COPIED_TO_CLIPBOARD, AppConstants.TOAST_TYPE.INFO);
   }
 }

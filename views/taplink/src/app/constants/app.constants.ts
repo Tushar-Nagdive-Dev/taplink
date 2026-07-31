@@ -5,6 +5,14 @@ export const AppConstants = Object.freeze({
     INFO: 'info',
     WARNING: 'warning',
   },
+  URLs : {
+    HTTPS_TAP_LINKS : 'https://tap.link/{activeCode}'
+  },
+  REPLACEMENTS: {
+    ID: '{id}',
+    IS_FAVORITE: '{isFavorite}',
+    ACTIVE_CODE : '{activeCode}'
+  },
   TOAST_MESSAGES: {
     FILL_TITLE_URL : 'Please fill in both title and URL',
     TOAST_USER_PROFILE_SAVE_MSG: 'User profile updated successfully.',
@@ -18,7 +26,8 @@ export const AppConstants = Object.freeze({
     LINK_DELETED : 'Link deleted',
     FAILED_TO_SAVE_CHANGES : 'Failed to save changes',
     FAILED_TO_UPDATE_FAVORITE_STATUS :'Failed to update favorite status',
-    FAILED_TO_SAVE_STATUS : 'Failed to save status'
+    FAILED_TO_SAVE_STATUS : 'Failed to save status',
+    LINK_FAVORITE_PATCHED : 'Link {id} favorite patched to {isFavorite}'
   },
   AUTH_KEY : 'taplink_is_auth',
   SOMETHING_WENT_WRONG : 'Something went wrong while verifying your credentials.',

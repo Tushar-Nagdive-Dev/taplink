@@ -19,14 +19,14 @@ export class LinkService {
   }
 
   updateLink(id: number, request: ILinkRequest): Observable<ILink> {
-    return this.apiClient.put<ILink>(`${APIs.USER_LINKS.LINKS}/${id}`, request);
+    return this.apiClient.put<ILink>(APIs.USER_LINKS.BY_ID(id), request);
   }
 
   deleteLink(id: number): Observable<void> {
-    return this.apiClient.delete<void>(`${APIs.USER_LINKS.LINKS}/${id}`);
+    return this.apiClient.delete<void>(APIs.USER_LINKS.BY_ID(id));
   }
 
   patchFavorite(id: number, isFavorite: boolean): Observable<ILink> {
-    return this.apiClient.patch<ILink>(`${APIs.USER_LINKS.LINKS}/${id}/favorite?isFavorite=${isFavorite}`, {});
+    return this.apiClient.patch<ILink>(APIs.USER_LINKS.FAVORITE_PATCHED(id, isFavorite), {});
   }
 }
