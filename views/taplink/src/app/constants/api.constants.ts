@@ -15,7 +15,7 @@ export const APIs = Object.freeze({
   },
   USER_LINKS: {
     LINKS : `${BASE}/api/v1/links`,
-    BY_ID :(id: number | string) => `${BASE}/api/v1/links/{id}`,
+    BY_ID :(id: number | string) => `${BASE}/api/v1/links/${id}`,
     FAVORITE_PATCHED :(id:number | string, isFavorite: boolean) => `${BASE}/api/v1/links/${id}/favorite?isFavorite=${isFavorite}`
   }
 })
