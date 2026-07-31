@@ -51,4 +51,11 @@ public class LinkController {
         linkService.deleteLink(id, username);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/favorite")
+    public ResponseEntity<@NonNull LinkResponse> updateFavorite(@PathVariable Long id, @RequestParam Boolean isFavorite) {
+        String username = SecurityUtils.getCurrentUsername();
+        log.info("Patching favorite status for user {}", username);
+        return ResponseEntity.ok(this.linkService.updateFavorite(id, isFavorite, username));
+    }
 }

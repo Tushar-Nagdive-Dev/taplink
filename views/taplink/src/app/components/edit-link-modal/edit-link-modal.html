@@ -1,111 +1,107 @@
-<div *ngIf="isOpen"
-     class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm fade-in-up p-4">
+<div class="bg-white/90 backdrop-blur-2xl rounded-3xl w-full max-w-3xl shadow-2xl border border-white overflow-hidden flex flex-col relative transform transition-all duration-300 animate-in zoom-in-95">
 
-  <div class="bg-white/90 backdrop-blur-2xl rounded-3xl w-full max-w-3xl shadow-2xl border border-white overflow-hidden flex flex-col relative transform transition-all duration-300 animate-in zoom-in-95">
+  <div class="flex items-center justify-between px-8 py-5 border-b border-slate-200/50 bg-white/50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner">
+        <lucide-icon [img]="SettingsIcon" class="w-5 h-5"></lucide-icon>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-slate-800 leading-tight">Edit Link Configuration</h3>
+        <p class="text-xs text-slate-500 font-medium">Updating: {{ link?.shortCode }}</p>
+      </div>
+    </div>
+    <button (click)="closeModal()" [disabled]="isLoading" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all">
+      <lucide-icon [img]="CloseIcon" class="w-5 h-5"></lucide-icon>
+    </button>
+  </div>
 
-    <div class="flex items-center justify-between px-8 py-5 border-b border-slate-200/50 bg-white/50">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner">
-          <lucide-icon [img]="SettingsIcon" class="w-5 h-5"></lucide-icon>
-        </div>
-        <div>
-          <h3 class="text-lg font-bold text-slate-800 leading-tight">Edit Link Configuration</h3>
-          <p class="text-xs text-slate-500 font-medium">Updating: {{ link?.shortCode }}</p>
+  <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 overflow-y-auto max-h-[70vh]">
+
+    <div class="flex flex-col gap-5">
+      <h4 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Identity & Routing</h4>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Public Title <span class="text-red-400">*</span></label>
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+          <lucide-icon [img]="TypeIcon" class="w-4 h-4 text-slate-400 mr-2.5"></lucide-icon>
+          <input type="text" [(ngModel)]="editData.title" placeholder="e.g. My Developer Portfolio" class="bg-transparent border-none outline-none w-full text-sm text-slate-700 font-medium">
         </div>
       </div>
-      <button (click)="closeModal()" [disabled]="isLoading" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all">
-        <lucide-icon [img]="CloseIcon" class="w-5 h-5"></lucide-icon>
-      </button>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Destination URL <span class="text-red-400">*</span></label>
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+          <lucide-icon [img]="ExternalIcon" class="w-4 h-4 text-slate-400 mr-2.5"></lucide-icon>
+          <input type="url" [(ngModel)]="editData.url" placeholder="https://..." class="bg-transparent border-none outline-none w-full text-sm text-slate-700 font-medium">
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+          Custom Slug
+          <span class="text-slate-400 normal-case font-normal">tap.link/</span>
+        </label>
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+          <lucide-icon [img]="LinkIcon" class="w-4 h-4 text-emerald-500 mr-2.5"></lucide-icon>
+          <input type="text" [(ngModel)]="editData.customSlug" [placeholder]="link?.shortCode" class="bg-transparent border-none outline-none w-full text-sm font-bold text-slate-700 placeholder:text-slate-300">
+        </div>
+      </div>
     </div>
 
-    <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 overflow-y-auto max-h-[70vh]">
+    <div class="flex flex-col gap-5">
+      <h4 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Settings & Appearance</h4>
 
-      <div class="flex flex-col gap-5">
-        <h4 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Identity & Routing</h4>
-
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Public Title <span class="text-red-400">*</span></label>
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
-            <lucide-icon [img]="TypeIcon" class="w-4 h-4 text-slate-400 mr-2.5"></lucide-icon>
-            <input type="text" [(ngModel)]="editData.title" class="bg-transparent border-none outline-none w-full text-sm text-slate-700 font-medium">
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Destination URL <span class="text-red-400">*</span></label>
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
-            <lucide-icon [img]="ExternalIcon" class="w-4 h-4 text-slate-400 mr-2.5"></lucide-icon>
-            <input type="url" [(ngModel)]="editData.url" class="bg-transparent border-none outline-none w-full text-sm text-slate-700 font-medium">
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
-            Custom Slug
-            <span class="text-slate-400 normal-case font-normal">tap.link/</span>
-          </label>
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
-            <lucide-icon [img]="LinkIcon" class="w-4 h-4 text-emerald-500 mr-2.5"></lucide-icon>
-            <input type="text" [(ngModel)]="editData.customSlug" [placeholder]="link?.shortCode" class="bg-transparent border-none outline-none w-full text-sm font-bold text-slate-700 placeholder:text-slate-300">
-          </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Internal Label (Optional)</label>
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+          <lucide-icon [img]="TagIcon" class="w-4 h-4 text-slate-400 mr-2.5"></lucide-icon>
+          <input type="text" [(ngModel)]="editData.label" placeholder="e.g. Summer Ad Campaign" class="bg-transparent border-none outline-none w-full text-sm text-slate-700 font-medium">
         </div>
       </div>
 
-      <div class="flex flex-col gap-5">
-        <h4 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">Settings & Appearance</h4>
-
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Internal Label (Optional)</label>
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
-            <lucide-icon [img]="TagIcon" class="w-4 h-4 text-slate-400 mr-2.5"></lucide-icon>
-            <input type="text" [(ngModel)]="editData.label" placeholder="e.g. Summer Campaign" class="bg-transparent border-none outline-none w-full text-sm text-slate-700 font-medium">
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Link Expiry (Optional)</label>
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all">
-            <lucide-icon [img]="CalendarIcon" class="w-4 h-4 text-rose-400 mr-2.5"></lucide-icon>
-            <input type="datetime-local" [(ngModel)]="editData.expiresAt" class="bg-transparent border-none outline-none w-full text-sm text-slate-600 font-medium">
-          </div>
-        </div>
-
-        <div class="flex items-end justify-between gap-4 mt-2">
-
-          <div class="flex flex-col gap-1.5">
-            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Theme Color</label>
-            <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 relative overflow-hidden">
-              <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm" [style.backgroundColor]="editData.colorCode"></div>
-              <input type="color" [(ngModel)]="editData.colorCode" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-              <span class="text-sm font-mono font-bold text-slate-600 uppercase">{{ editData.colorCode }}</span>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-1.5 items-end">
-            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Status</label>
-            <div class="py-2.5">
-              <label class="relative inline-flex items-center cursor-pointer origin-right scale-110">
-                <input type="checkbox" [(ngModel)]="editData.isActive" class="sr-only peer">
-                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
-              </label>
-            </div>
-          </div>
-
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Link Expiry (Optional)</label>
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 transition-all">
+          <lucide-icon [img]="CalendarIcon" class="w-4 h-4 text-rose-400 mr-2.5"></lucide-icon>
+          <input type="datetime-local" [(ngModel)]="editData.expiresAt" class="bg-transparent border-none outline-none w-full text-sm text-slate-600 font-medium">
         </div>
       </div>
 
-    </div>
+      <div class="flex items-end justify-between gap-4 mt-2">
 
-    <div class="px-8 py-5 bg-slate-50/80 backdrop-blur-md border-t border-slate-200/50 flex justify-end gap-3 rounded-b-3xl">
-      <button (click)="closeModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-200/50 transition-all">
-        Cancel
-      </button>
-      <button (click)="saveChanges()" [disabled]="isLoading || !editData.title || !editData.url"
-              class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-        <span *ngIf="isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-        {{ isLoading ? 'Saving...' : 'Save Configuration' }}
-      </button>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Theme Color</label>
+          <div class="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 relative overflow-hidden">
+            <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm" [style.backgroundColor]="editData.colorCode"></div>
+            <input type="color" [(ngModel)]="editData.colorCode" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+            <span class="text-sm font-mono font-bold text-slate-600 uppercase">{{ editData.colorCode }}</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5 items-end">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Status</label>
+          <div class="py-2.5">
+            <label class="relative inline-flex items-center cursor-pointer origin-right scale-110">
+              <input type="checkbox" [(ngModel)]="editData.isActive" class="sr-only peer">
+              <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
+            </label>
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </div>
+
+  <div class="px-8 py-5 bg-slate-50/80 backdrop-blur-md border-t border-slate-200/50 flex justify-end gap-3 rounded-b-3xl">
+    <button (click)="closeModal()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-200/50 transition-all">
+      Cancel
+    </button>
+    <button (click)="saveChanges()" [disabled]="isLoading || !editData.title || !editData.url"
+            class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+      <span *ngIf="isLoading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+      {{ isLoading ? 'Saving...' : 'Save Configuration' }}
+    </button>
+  </div>
+
 </div>

@@ -2,6 +2,7 @@ package org.co.taplink.links.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.co.taplink.configs.BaseEntity;
 import org.co.taplink.links.entities.LinkPresentation;
 import org.co.taplink.links.entities.LinkRouting;
 import org.co.taplink.links.entities.UserLinks;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static org.co.taplink.utils.TapLinkAppConstants.UNKNOWN;
 import static org.co.taplink.utils.TapLinkAppMessages.Link.*;
 
 @Slf4j
@@ -116,7 +118,7 @@ public class LinkServiceImpl implements LinkService {
         });
 
         return mapToResponse(userLink);
-    } 
+    }
 
     @Override
     @Transactional
@@ -128,10 +130,25 @@ public class LinkServiceImpl implements LinkService {
         this.userLinkRepository.delete(userLink);
     }
 
+    @Override
+    @Transactional
+    public LinkResponse updateFavorite(Long linkId, Boolean isFavorite, String username) {
+        log.info("Patching favorite status for link with ID {} to favorite {}", linkId, isFavorite);
+        Users user = this.userRepository.findByUsernameWithRoles(username)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(USER_NOT_FOUND, username)));
+        UserLinks userLinks = this.userLinkRepository.findByIdAndUserId(linkId, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException(String.format(NOT_FOUND, linkId)));
+        this.linkPresentationRepository.findById(linkId).ifPresent(presentation -> {
+            presentation.setIsFavorite(isFavorite);
+            this.linkPresentationRepository.save(presentation);
+        });
+        return mapToResponse(userLinks);
+    }
+
     // Updated to pull from all three repositories securely
     private LinkResponse mapToResponse(UserLinks link) {
         String createdAtStr = link.getCreatedAt() != null ?
-                link.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "Unknown";
+                link.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : UNKNOWN;
 
         // Safely fetch related entities (they share the exact same ID due to @MapsId)
         LinkRouting routing = this.linkRoutingRepository.findById(link.getId()).orElse(null);

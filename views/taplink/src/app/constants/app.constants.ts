@@ -12,11 +12,13 @@ export const AppConstants = Object.freeze({
     LINK_ADDED_SUCCESSFULLY : 'Link added successfully!',
     FAILED_TO_CREATE_LINK : 'Failed to create link',
     FAILED_TO_LOAD_LINKS : 'Failed to load links',
-    COPIED : 'Copied to clipboard!',
+    COPIED_TO_CLIPBOARD : 'Copied to clipboard!',
     FAILED_TO_DELETE_LINK : 'Failed to delete link',
     ARE_SURE_YOU_WANT_T0_DELETE_LINK : 'Are you sure you want to delete this link?',
     LINK_DELETED : 'Link deleted',
-    FAILED_TO_SAVE_CHANGES : 'Failed to save changes'
+    FAILED_TO_SAVE_CHANGES : 'Failed to save changes',
+    FAILED_TO_UPDATE_FAVORITE_STATUS :'Failed to update favorite status',
+    FAILED_TO_SAVE_STATUS : 'Failed to save status'
   },
   AUTH_KEY : 'taplink_is_auth',
   SOMETHING_WENT_WRONG : 'Something went wrong while verifying your credentials.',

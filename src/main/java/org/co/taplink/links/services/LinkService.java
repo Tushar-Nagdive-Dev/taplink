@@ -14,4 +14,6 @@ public interface LinkService {
     LinkResponse updateLink(Long linkId, LinkRequest request, String username);
 
     void deleteLink(Long linkId, String username);
+
+    LinkResponse updateFavorite(Long linkId, Boolean isFavorite, String username);
 }

@@ -25,4 +25,8 @@ export class LinkService {
   deleteLink(id: number): Observable<void> {
     return this.apiClient.delete<void>(`${APIs.USER_LINKS.LINKS}/${id}`);
   }
+
+  patchFavorite(id: number, isFavorite: boolean): Observable<ILink> {
+    return this.apiClient.patch<ILink>(`${APIs.USER_LINKS.LINKS}/${id}/favorite?isFavorite=${isFavorite}`, {});
+  }
 }
