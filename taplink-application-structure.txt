@@ -2,6 +2,7 @@
 === 📁 TAPLINK FULL-STACK PROJECT STRUCTURE ===
 📄 .DS_Store
 📄 HELP.md
+📄 README.md
 📂 gradle
   📂 wrapper
     📄 gradle-wrapper.jar
@@ -89,6 +90,7 @@
       📄 main.server.ts
       📄 styles.scss
       📄 server.ts
+      📄 proxy.conf.json
 📂 src
   📄 .DS_Store
   📂 test

@@ -5,6 +5,35 @@ public final class TapLinkAppMessages {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated.");
     }
 
+    public static final class DEV_PORTAL {
+        public static final String HTML_CONTENT = """
+                            <!DOCTYPE html>
+                            <html lang="en">
+                            <head>
+                                <meta charset="UTF-8">
+                                <title>Taplink Local Development Portal</title>
+                                <style>
+                                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                                    .card { background: #1e293b; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; max-width: 500px; border: 1px solid #334155; }
+                                    h1 { color: #38bdf8; margin-top: 0; font-size: 24px; }
+                                    p { color: #94a3b8; line-height: 1.6; }
+                                    .btn { display: inline-block; margin-top: 20px; background: #0284c7; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: background 0.2s; }
+                                    .btn:hover { background: #0369a1; }
+                                    .badge { background: #065f46; color: #34d399; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="card">
+                                    <span class="badge">PURE DEV MODE</span>
+                                    <h1>Taplink Backend API Server</h1>
+                                    <p>You are accessing the backend server directly on port <strong>1005</strong>.</p>
+                                    <p>Direct UI access is disabled during local development. Please use the Angular development server instead.</p>
+                                    <a href="http://localhost:4200" class="btn">🚀 Open Angular Dev Server (Port 4200)</a>
+                                </div>
+                            </body>
+                            </html>""";
+    }
+
     public static final class Auth {
         // %s expects a String (e.g., the actual username they tried to use)
         public static final String USERNAME_TAKEN = "Registration failed: Username '%s' is already taken!";

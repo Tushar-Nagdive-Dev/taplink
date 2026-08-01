@@ -1,20 +1,20 @@
 plugins {
-	java
-	id("org.springframework.boot") version "4.1.0"
-	id("io.spring.dependency-management") version "1.1.7"
+    java
+    id("org.springframework.boot") version "4.1.0"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "org.co"
 version = "0.0.1"
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
@@ -55,7 +55,7 @@ dependencies {
 }
 
 tasks.withType<Test> {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 // Helper function to load .env file into a Map
@@ -66,7 +66,6 @@ fun loadEnvFile(): Map<String, String> {
     if (envFile.exists()) {
         envFile.forEachLine { line ->
             val trimmed = line.trim()
-            // Skip empty lines and comments
             if (trimmed.isNotBlank() && !trimmed.startsWith("#")) {
                 val parts = trimmed.split("=", limit = 2)
                 if (parts.size == 2) {
@@ -78,7 +77,7 @@ fun loadEnvFile(): Map<String, String> {
     return envMap
 }
 
-// Inject environment variables into the 'bootRun' task (local development)
+// Inject environment variables into the 'bootRun' and 'runOnlyDev' tasks (local development)
 tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
     loadEnvFile().forEach { (key, value) ->
         environment(key, value)
@@ -92,14 +91,6 @@ tasks.withType<Test> {
     }
 }
 
-tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
-    val env = loadEnvFile()
-
-    env.forEach { (key, value) ->
-        environment(key, value)
-    }
-}
-
 // ==========================================
 // --- Step 1: Custom Clean Configuration ---
 // ==========================================
@@ -107,7 +98,10 @@ tasks.named<Delete>("clean") {
     // 1. Clear compiled Angular SPA bundles from Spring Boot's static folder
     delete("src/main/resources/static")
 
-    // 2. Clear local log files and any logs directory
+    // 2. Clear generated structure text file
+    delete("taplink-application-structure.txt")
+
+    // 3. Clear local log files and any logs directory
     delete(fileTree(projectDir){
         include("**/*.log")
         include("logs/**")
@@ -121,18 +115,21 @@ val buildAngular = tasks.register<Exec>("buildAngular") {
     group = "build"
     description = "Builds the Angular frontend for production and outputs into Spring Boot static resources"
 
-    // Point Gradle to your Angular directory
     workingDir = file("views/taplink")
 
     val isWindows = System.getProperty("os.name").lowercase().contains("win")
     if (isWindows) {
         commandLine("cmd", "/c", "npm", "run", "build", "--", "--configuration", "production")
     } else {
-        commandLine("npm", "run", "build", "--", "--configuration", "production")
+        commandLine("npm", "run", "build:prod")
     }
 }
+
+// Guard condition: ONLY hook production Angular builds to explicit package tasks (keeps runOnlyDev clean)
 tasks.named("processResources") {
-    dependsOn(buildAngular)
+    if (gradle.startParameter.taskNames.any { it.contains("build") || it.contains("assemble") || it.contains("jar") }) {
+        dependsOn(buildAngular)
+    }
 }
 
 // ==========================================
@@ -165,16 +162,26 @@ tasks.register("printProjectStructure") {
         structureBuilder.append("===================================================\n")
 
         val outputText = structureBuilder.toString()
-
-        // 1. Print to console
         println(outputText)
-
-        // 2. Save automatically to a file in the project root
         file("taplink-application-structure.txt").writeText(outputText)
     }
 }
 
-// Automatically print and save the structure whenever a build completes successfully
 tasks.named("build") {
     finalizedBy("printProjectStructure")
+}
+
+// ==========================================
+// --- Step 4: Local Dev Runner Task ---
+// ==========================================
+tasks.register<org.springframework.boot.gradle.tasks.run.BootRun>("runOnlyDev") {
+    group = "application"
+    description = "Runs Spring Boot locally for development, activating the port 4200 redirect portal."
+
+    // Pass the system property that Spring Boot listens for
+    systemProperty("taplink.mode", "local-dev")
+
+    // Ensure it inherits classpath and environment variables (like .env loader)
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("org.co.taplink.TaplinkApplication")
 }
