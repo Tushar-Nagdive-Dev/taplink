@@ -77,7 +77,7 @@ fun loadEnvFile(): Map<String, String> {
     return envMap
 }
 
-// Inject environment variables into the 'bootRun' task (local development)
+// Inject environment variables into the 'bootRun' and 'runOnlyDev' tasks (local development)
 tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
     loadEnvFile().forEach { (key, value) ->
         environment(key, value)
@@ -121,13 +121,15 @@ val buildAngular = tasks.register<Exec>("buildAngular") {
     if (isWindows) {
         commandLine("cmd", "/c", "npm", "run", "build", "--", "--configuration", "production")
     } else {
-        commandLine("npm", "run", "build", "--", "--configuration", "production")
+        commandLine("npm", "run", "build:prod")
     }
 }
 
-// Ensure production builds correctly bundle Angular into static resources for JAR packaging
+// Guard condition: ONLY hook production Angular builds to explicit package tasks (keeps runOnlyDev clean)
 tasks.named("processResources") {
-    dependsOn(buildAngular)
+    if (gradle.startParameter.taskNames.any { it.contains("build") || it.contains("assemble") || it.contains("jar") }) {
+        dependsOn(buildAngular)
+    }
 }
 
 // ==========================================
@@ -167,4 +169,19 @@ tasks.register("printProjectStructure") {
 
 tasks.named("build") {
     finalizedBy("printProjectStructure")
+}
+
+// ==========================================
+// --- Step 4: Local Dev Runner Task ---
+// ==========================================
+tasks.register<org.springframework.boot.gradle.tasks.run.BootRun>("runOnlyDev") {
+    group = "application"
+    description = "Runs Spring Boot locally for development, activating the port 4200 redirect portal."
+
+    // Pass the system property that Spring Boot listens for
+    systemProperty("taplink.mode", "local-dev")
+
+    // Ensure it inherits classpath and environment variables (like .env loader)
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("org.co.taplink.TaplinkApplication")
 }

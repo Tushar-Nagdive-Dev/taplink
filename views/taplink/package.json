@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start:all": "concurrently \"ng serve --proxy-config src/proxy.conf.json\" \"cd ../.. && ./gradlew bootRun\"",    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start:all": "concurrently \"ng serve --proxy-config src/proxy.conf.json\" \"cd ../.. && ./gradlew runOnlyDev\"",    "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:taplink": "node dist/taplink/server/server.mjs",
     "build:qa": "ng build --configuration qa",
