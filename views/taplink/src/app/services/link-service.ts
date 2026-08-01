@@ -29,4 +29,8 @@ export class LinkService {
   patchFavorite(id: number, isFavorite: boolean): Observable<ILink> {
     return this.apiClient.patch<ILink>(APIs.USER_LINKS.FAVORITE_PATCHED(id, isFavorite), {});
   }
+
+  patchStatus(id: number, isActive: boolean): Observable<boolean> {
+    return this.apiClient.patch<boolean>(APIs.USER_LINKS.UPDATE_STATUS(id, isActive), {});
+  }
 }

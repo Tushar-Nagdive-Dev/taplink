@@ -145,6 +145,19 @@ public class LinkServiceImpl implements LinkService {
         return mapToResponse(userLinks);
     }
 
+    @Override
+    @Transactional
+    public Boolean updateStatus(Long linkId, String username, Boolean isActive) {
+        log.info("Active or Inactive status for link with ID {} isActive {}", linkId,  isActive);
+        Users user = this.userRepository.findByUsernameWithRoles(username)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(USER_NOT_FOUND, username)));
+        UserLinks userLinks = this.userLinkRepository.findByIdAndUserId(linkId, user.getId())
+                .orElseThrow(() -> new IllegalArgumentException(String.format(NOT_FOUND, linkId)));
+        userLinks.setIsActive(isActive);
+        this.userLinkRepository.save(userLinks);
+        return isActive;
+    }
+
     // Updated to pull from all three repositories securely
     private LinkResponse mapToResponse(UserLinks link) {
         String createdAtStr = link.getCreatedAt() != null ?
