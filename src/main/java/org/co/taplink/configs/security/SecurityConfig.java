@@ -43,19 +43,42 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Permit Angular SPA Static Resources & Root Pages
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/favicon.ico",
+                                "/*.js",
+                                "/*.css",
+                                "/*.ico",
+                                "/assets/**",
+                                "/public/**"
+                        ).permitAll()
+                        // 2. Permit Angular Client-Side SPA Routes (handled by SpaController)
+                        .requestMatchers(
+                                "/signin",
+                                "/signup",
+                                "/auth-error",
+                                "/taplink-dashboard/**",
+                                "/user-profile/**"
+                        ).permitAll()
+                        // 3. Public Backend API Endpoints & Swagger
                         .requestMatchers(
                                 AUTH_PATH + FORWARD_SLASH + MATCH_ALL,
                                 SWAGGER_UI_PATH + FORWARD_SLASH + MATCH_ALL,
                                 SWAGGER_HTML_PATH + FORWARD_SLASH + MATCH_ALL,
-                                V3_API_DOCS_PATH).permitAll()
+                                V3_API_DOCS_PATH
+                        ).permitAll()
+                        // 4. Role-Secured Backend API Endpoints
                         .requestMatchers(ADMIN_PATH + FORWARD_SLASH + MATCH_ALL).hasRole(ADMIN)
                         .requestMatchers(
                                 PREMIUM_USER_PATH + FORWARD_SLASH + MATCH_ALL,
                                 QR_BARCODE_PATH + FORWARD_SLASH + MATCH_ALL,
-                                USER_PROFILE_PATH + FORWARD_SLASH + MATCH_ALL)
-                        .hasAnyRole(USER, PREMIUM)
+                                USER_PROFILE_PATH + FORWARD_SLASH + MATCH_ALL
+                        ).hasAnyRole(USER, PREMIUM)
                         .requestMatchers(LINKS_PATH + FORWARD_SLASH + MATCH_ALL).hasAnyRole(USER, ADMIN)
-                .anyRequest().authenticated())
+                        // 5. Secure Everything Else
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -74,8 +97,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.HEAD.name(), HttpMethod.OPTIONS.name(), HttpMethod.PATCH.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name()));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:1005"));
+        configuration.setAllowedMethods(Arrays.asList(
+                HttpMethod.GET.name(), HttpMethod.HEAD.name(),
+                HttpMethod.OPTIONS.name(), HttpMethod.PATCH.name(),
+                HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name()));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

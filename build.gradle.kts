@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "org.co"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 java {
 	toolchain {
@@ -94,9 +94,87 @@ tasks.withType<Test> {
 
 tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
     val env = loadEnvFile()
-    println("🔍 DIAGNOSTIC: Loaded ${env.size} variables from .env file!")
 
     env.forEach { (key, value) ->
         environment(key, value)
     }
+}
+
+// ==========================================
+// --- Step 1: Custom Clean Configuration ---
+// ==========================================
+tasks.named<Delete>("clean") {
+    // 1. Clear compiled Angular SPA bundles from Spring Boot's static folder
+    delete("src/main/resources/static")
+
+    // 2. Clear local log files and any logs directory
+    delete(fileTree(projectDir){
+        include("**/*.log")
+        include("logs/**")
+    })
+}
+
+// ==========================================
+// --- Step 2: Angular Build Automation ---
+// ==========================================
+val buildAngular = tasks.register<Exec>("buildAngular") {
+    group = "build"
+    description = "Builds the Angular frontend for production and outputs into Spring Boot static resources"
+
+    // Point Gradle to your Angular directory
+    workingDir = file("views/taplink")
+
+    val isWindows = System.getProperty("os.name").lowercase().contains("win")
+    if (isWindows) {
+        commandLine("cmd", "/c", "npm", "run", "build", "--", "--configuration", "production")
+    } else {
+        commandLine("npm", "run", "build", "--", "--configuration", "production")
+    }
+}
+tasks.named("processResources") {
+    dependsOn(buildAngular)
+}
+
+// ==========================================
+// --- Step 3: Project Structure Summary ---
+// ==========================================
+tasks.register("printProjectStructure") {
+    group = "help"
+    description = "Displays and saves the full file and path structure of the project after a build."
+
+    doLast {
+        val structureBuilder = StringBuilder()
+        structureBuilder.append("\n=== 📁 TAPLINK FULL-STACK PROJECT STRUCTURE ===\n")
+
+        projectDir.walkTopDown()
+            .maxDepth(6)
+            .filter { file ->
+                val path = file.absolutePath
+                !path.contains("node_modules") && !path.contains(".angular") && !path.contains(".git") &&
+                        !path.contains("build") && !path.contains(".gradle") && !path.contains(".vscode") &&
+                        !path.contains("dist") && !path.contains(".idea")
+            }
+            .forEach { file ->
+                val relativePath = file.relativeTo(projectDir)
+                if (relativePath.path.isNotEmpty()) {
+                    val indent = "  ".repeat(relativePath.invariantSeparatorsPath.count { it == '/' })
+                    val prefix = if (file.isDirectory) "📂" else "📄"
+                    structureBuilder.append("$indent$prefix ${file.name}\n")
+                }
+            }
+        structureBuilder.append("===================================================\n")
+
+        val outputText = structureBuilder.toString()
+
+        // 1. Print to console
+        println(outputText)
+
+        // 2. Save automatically to a file in the project root
+        file("taplink-application-structure.txt").writeText(outputText)
+    }
+}
+
+// Automatically print and save the structure whenever a build completes successfully
+tasks.named("build") {
+    finalizedBy("printProjectStructure")
 }

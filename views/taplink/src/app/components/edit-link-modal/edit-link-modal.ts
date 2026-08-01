@@ -11,20 +11,21 @@ import {
   LucideAngularModule, Link2, Type, X, Tag, Calendar,
   Palette, ExternalLink, Settings
 } from 'lucide-angular';
+import {HasValuePipe} from '../../pipes/has-value-pipe';
 
 @Component({
   selector: 'app-edit-link-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule, HasValuePipe],
   templateUrl: './edit-link-modal.html',
   styleUrl: './edit-link-modal.scss',
 })
 export class EditLinkModal implements OnInit {
   // 1. Inject DialogRef to control closing and returning updated data
-  private dialogRef = inject<DialogRef<ILink>>(DialogRef);
+  private dialogRef:DialogRef<ILink> = inject<DialogRef<ILink>>(DialogRef);
 
   // 2. Inject DIALOG_DATA to receive the selected ILink from LinkManager
-  public link = inject<ILink>(DIALOG_DATA);
+  public link: ILink = inject<ILink>(DIALOG_DATA);
 
   private linkService = inject(LinkService);
   private toastService = inject(ToastService);

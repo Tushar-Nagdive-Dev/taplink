@@ -45,3 +45,5 @@ views/taplink/package-lock.json
 views/taplink/.angular
 views/taplink/dist
 .DS_Store
+
+src/main/resources/static/*
