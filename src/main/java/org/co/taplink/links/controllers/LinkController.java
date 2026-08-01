@@ -58,4 +58,11 @@ public class LinkController {
         log.info("Patching favorite status for user {}", username);
         return ResponseEntity.ok(this.linkService.updateFavorite(id, isFavorite, username));
     }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<@NonNull Boolean> updateStatus(@PathVariable Long id, @RequestParam Boolean isActive) {
+        String username = SecurityUtils.getCurrentUsername();
+        log.info("Patching active status for user {}", username);
+        return ResponseEntity.ok(this.linkService.updateStatus(id, username, isActive));
+    }
 }

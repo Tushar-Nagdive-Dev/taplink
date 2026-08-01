@@ -27,7 +27,8 @@ export const AppConstants = Object.freeze({
     FAILED_TO_SAVE_CHANGES : 'Failed to save changes',
     FAILED_TO_UPDATE_FAVORITE_STATUS :'Failed to update favorite status',
     FAILED_TO_SAVE_STATUS : 'Failed to save status',
-    LINK_FAVORITE_PATCHED : 'Link {id} favorite patched to {isFavorite}'
+    LINK_FAVORITE_PATCHED : 'Link {id} favorite patched to {isFavorite}',
+    QUICK_SAVED : 'Quick-saved link {id}'
   },
   AUTH_KEY : 'taplink_is_auth',
   SOMETHING_WENT_WRONG : 'Something went wrong while verifying your credentials.',

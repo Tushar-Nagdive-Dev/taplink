@@ -154,8 +154,8 @@ export class LinkManager implements OnInit {
       isFavorite: link.isFavorite
     };
 
-    this.linkService.updateLink(link.id, updateReq).subscribe({
-      next: () => console.log(`Quick-saved link ${link.id}`),
+    this.linkService.patchStatus(link.id, updateReq.isActive).subscribe({
+      next: () => console.log(AppConstants.TOAST_MESSAGES.QUICK_SAVED.replace(AppConstants.REPLACEMENTS.ID, String(link.id))),
       error: () => this.toastService.show(AppConstants.TOAST_MESSAGES.FAILED_TO_SAVE_STATUS, AppConstants.TOAST_TYPE.ERROR)
     });
   }
