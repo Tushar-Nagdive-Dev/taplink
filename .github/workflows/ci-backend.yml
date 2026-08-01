@@ -58,3 +58,9 @@ jobs:
         with:
           name: test-report
           path: build/reports/tests/test/
+      # Sonar Setup
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
