@@ -48,5 +48,5 @@ jobs:
       - name: Build and Test with Gradle
         run: ./gradlew clean build
         env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET_KEY }}
           SPRING_PROFILES_ACTIVE: test
