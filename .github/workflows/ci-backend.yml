@@ -48,7 +48,7 @@ jobs:
       - name: Build and Test with Gradle
         run: ./gradlew clean build
         env:
-          JWT_SECRET: "dummy-secret-key-for-github-actions-testing-only-123456789"
+          JWT_SECRET: "defaultTestSecretKeyForTestingPurposesOnly123456789"
           SPRING_PROFILES_ACTIVE: test
       # Upload test report if tests fail (or always)
       - name: Upload Test Report
