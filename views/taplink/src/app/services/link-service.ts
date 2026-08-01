@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ILink, ILinkRequest } from '../interfaces/link.interface';
+import {ILink, ILinkRequest, IReorderLink} from '../interfaces/link.interface';
 import { ApiClientService } from './api-client-service';
 import {APIs} from '../constants/api.constants';
 
@@ -32,5 +32,9 @@ export class LinkService {
 
   patchStatus(id: number, isActive: boolean): Observable<boolean> {
     return this.apiClient.patch<boolean>(APIs.USER_LINKS.UPDATE_STATUS(id, isActive), {});
+  }
+
+  patchReorderLink(linkPositions: IReorderLink[]): Observable<void> {
+    return this.apiClient.patch<void>(APIs.USER_LINKS.LINKS_REORDER, {linkPositions});
   }
 }

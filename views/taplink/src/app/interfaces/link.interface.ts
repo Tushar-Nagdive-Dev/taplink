@@ -50,3 +50,8 @@ export interface ITag {
   name: string;
   badgeColor: string;
 }
+
+export interface IReorderLink {
+  id: number;
+  position: number;
+}
