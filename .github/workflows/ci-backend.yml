@@ -67,6 +67,6 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=Tushar-Nagdive-Dev_taplink
-            -Dsonar.organization=tushar-nagdive-dev
+            -Dsonar.organization=tushar-nagdive-dev 
             -Dsonar.sources=src/main,views/taplink/src
             -Dsonar.exclusions=**/build/**,**/node_modules/**,**/.angular/**,**/resources/**
