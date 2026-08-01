@@ -1,20 +1,20 @@
 plugins {
-	java
-	id("org.springframework.boot") version "4.1.0"
-	id("io.spring.dependency-management") version "1.1.7"
+    java
+    id("org.springframework.boot") version "4.1.0"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "org.co"
 version = "0.0.1"
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
@@ -55,7 +55,7 @@ dependencies {
 }
 
 tasks.withType<Test> {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 // Helper function to load .env file into a Map
@@ -66,7 +66,6 @@ fun loadEnvFile(): Map<String, String> {
     if (envFile.exists()) {
         envFile.forEachLine { line ->
             val trimmed = line.trim()
-            // Skip empty lines and comments
             if (trimmed.isNotBlank() && !trimmed.startsWith("#")) {
                 val parts = trimmed.split("=", limit = 2)
                 if (parts.size == 2) {
@@ -92,14 +91,6 @@ tasks.withType<Test> {
     }
 }
 
-tasks.withType<org.springframework.boot.gradle.tasks.run.BootRun> {
-    val env = loadEnvFile()
-
-    env.forEach { (key, value) ->
-        environment(key, value)
-    }
-}
-
 // ==========================================
 // --- Step 1: Custom Clean Configuration ---
 // ==========================================
@@ -107,7 +98,10 @@ tasks.named<Delete>("clean") {
     // 1. Clear compiled Angular SPA bundles from Spring Boot's static folder
     delete("src/main/resources/static")
 
-    // 2. Clear local log files and any logs directory
+    // 2. Clear generated structure text file
+    delete("taplink-application-structure.txt")
+
+    // 3. Clear local log files and any logs directory
     delete(fileTree(projectDir){
         include("**/*.log")
         include("logs/**")
@@ -121,7 +115,6 @@ val buildAngular = tasks.register<Exec>("buildAngular") {
     group = "build"
     description = "Builds the Angular frontend for production and outputs into Spring Boot static resources"
 
-    // Point Gradle to your Angular directory
     workingDir = file("views/taplink")
 
     val isWindows = System.getProperty("os.name").lowercase().contains("win")
@@ -131,6 +124,8 @@ val buildAngular = tasks.register<Exec>("buildAngular") {
         commandLine("npm", "run", "build", "--", "--configuration", "production")
     }
 }
+
+// Ensure production builds correctly bundle Angular into static resources for JAR packaging
 tasks.named("processResources") {
     dependsOn(buildAngular)
 }
@@ -165,16 +160,11 @@ tasks.register("printProjectStructure") {
         structureBuilder.append("===================================================\n")
 
         val outputText = structureBuilder.toString()
-
-        // 1. Print to console
         println(outputText)
-
-        // 2. Save automatically to a file in the project root
         file("taplink-application-structure.txt").writeText(outputText)
     }
 }
 
-// Automatically print and save the structure whenever a build completes successfully
 tasks.named("build") {
     finalizedBy("printProjectStructure")
 }
