@@ -50,3 +50,10 @@ jobs:
         env:
           JWT_SECRET: "dummy-secret-key-for-github-actions-testing-only-123456789"
           SPRING_PROFILES_ACTIVE: test
+      # Upload test report if tests fail (or always)
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/
