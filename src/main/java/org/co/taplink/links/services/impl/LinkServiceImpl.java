@@ -2,12 +2,12 @@ package org.co.taplink.links.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.co.taplink.configs.BaseEntity;
 import org.co.taplink.links.entities.LinkPresentation;
 import org.co.taplink.links.entities.LinkRouting;
 import org.co.taplink.links.entities.UserLinks;
 import org.co.taplink.links.modals.LinkRequest;
 import org.co.taplink.links.modals.LinkResponse;
+import org.co.taplink.links.modals.ReorderLinksRequest;
 import org.co.taplink.links.repository.LinkPresentationRepository;
 import org.co.taplink.links.repository.LinkRoutingRepository;
 import org.co.taplink.links.repository.UserLinkRepository;
@@ -156,6 +156,24 @@ public class LinkServiceImpl implements LinkService {
         userLinks.setIsActive(isActive);
         this.userLinkRepository.save(userLinks);
         return isActive;
+    }
+
+    @Override
+    @Transactional
+    public void updateLinkPositions(ReorderLinksRequest request, String username) {
+        log.info("Update Links Position for Username :: {}", username);
+
+        Users user = this.userRepository.findByUsernameWithRoles(username)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(USER_NOT_FOUND, username)));
+
+        if (request.linkPositions() == null || request.linkPositions().isEmpty()) {
+            return;
+        }
+
+        // High-performance direct updates scoped strictly to the authenticated user's ID
+        for (var linkPos : request.linkPositions()) {
+            this.userLinkRepository.updateSinglePositionForUser(linkPos.id(), linkPos.position(), user.getId());
+        }
     }
 
     // Updated to pull from all three repositories securely

@@ -122,6 +122,14 @@ export class LinkManager implements OnInit {
 
   drop(event: CdkDragDrop<ILink[]>) {
     moveItemInArray(this.myLinks, event.previousIndex, event.currentIndex);
+    const payload = this.myLinks.map((link, index) => ({id: link.id, position: index}));
+    this.linkService.patchReorderLink(payload).subscribe({
+      next: () => console.log(AppConstants.TOAST_MESSAGES.LINK_POSITION_UPDATE_SUCCESSFUL),
+      error: () => {
+        this.toastService.show(AppConstants.TOAST_MESSAGES.LINK_POSITION_UPDATE_FAILED, AppConstants.TOAST_TYPE.ERROR);
+        this.loadLinks();
+      }
+    });
   }
 
   toggleFavorite(link: ILink) {

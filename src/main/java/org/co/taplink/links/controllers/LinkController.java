@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.co.taplink.configs.security.SecurityUtils;
 import org.co.taplink.links.modals.LinkRequest;
 import org.co.taplink.links.modals.LinkResponse;
+import org.co.taplink.links.modals.ReorderLinksRequest;
 import org.co.taplink.links.services.LinkService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,5 +65,13 @@ public class LinkController {
         String username = SecurityUtils.getCurrentUsername();
         log.info("Patching active status for user {}", username);
         return ResponseEntity.ok(this.linkService.updateStatus(id, username, isActive));
+    }
+
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorderLinks(@RequestBody ReorderLinksRequest request) {
+        String username = SecurityUtils.getCurrentUsername();
+        log.info("Reordering links for user {}", username);
+        this.linkService.updateLinkPositions(request, username);
+        return ResponseEntity.ok().build();
     }
 }
