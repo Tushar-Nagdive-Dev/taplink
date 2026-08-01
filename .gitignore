@@ -40,7 +40,6 @@ logs
 
 # UI
 views/taplink/node_modules
-views/taplink/package-lock.json
 views/taplink/.angular
 views/taplink/dist
 .DS_Store
