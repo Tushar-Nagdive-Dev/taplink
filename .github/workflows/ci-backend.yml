@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository code
+      # 1. Checkout repository code
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
@@ -27,14 +27,26 @@ jobs:
           java-version: '25'
           cache: 'gradle'
 
-      # 3. Grant execution permissions to Gradle wrapper
+      # 3. Set up Node.js (Required because Gradle's build script triggers Angular compilation)
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: views/taplink/package.json
+
+      # 4. Install Angular frontend dependencies
+      - name: Install Frontend Dependencies
+        working-directory: views/taplink
+        run: npm ci
+
+      # 5. Grant execution permissions to Gradle wrapper
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x gradlew
 
-      # 4. Run Gradle build and tests using H2 test profile
+      # 6. Run Gradle build and tests using H2 test profile
       - name: Build and Test with Gradle
         run: ./gradlew clean build
         env:
-          # Only pass app secrets like JWT; database uses H2 test profile automatically
-          JWT_SECRET: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SPRING_PROFILES_ACTIVE: test
