@@ -5,9 +5,9 @@ spring:
   datasource:
     # Fallback to local/H2 defaults if environment variables aren't injected yet,
     # preventing the container from throwing a BeanInstantiationException.
-    url: ${DATABASE_URL:jdbc:h2:mem:prod_fallback;DB_CLOSE_DELAY=-1}
-    username: ${DATABASE_USERNAME:sa}
-    password: ${DATABASE_PASSWORD:}
+    url: ${PROD_DATABASE_URL:jdbc:h2:mem:prod_fallback;DB_CLOSE_DELAY=-1}
+    username: ${PROD_DATABASE_USERNAME:sa}
+    password: ${PROD_DATABASE_PASSWORD:}
     driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
 
   jpa:
