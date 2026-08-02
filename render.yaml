@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: taplink-fullstack
+    env: docker
+    plan: free
+    branch: main
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: JWT_EXPIRATION
+        value: "86400000"
