@@ -1,0 +1,21 @@
+name: Production Deployment (CD)
+
+on:
+  push:
+    branches:
+      - main # Triggers ONLY when code lands on main (e.g., merging develop -> main)
+
+jobs:
+  deploy:
+    name: Trigger Render Production Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
+          if [ "$response" -eq 200 ] || [ "$response" -eq 201 ]; then
+            echo "Successfully triggered Render deployment!"
+          else
+            echo "Failed to trigger deployment. HTTP status code: $response"
+            exit 1
+          fi

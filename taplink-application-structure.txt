@@ -1,7 +1,10 @@
 
 === 📁 TAPLINK FULL-STACK PROJECT STRUCTURE ===
+📄 LICENSE.md
+📄 render.yaml
 📄 .DS_Store
-📄 HELP.md
+📄 CHANGELOG.md
+📄 Dockerfile
 📄 README.md
 📂 gradle
   📂 wrapper
@@ -11,8 +14,8 @@
 📂 logs
   📄 database.log
   📄 application.log
-📄 taplink-application-structure.txt
 📄 .env
+📄 CONTRIBUTING.md
 📄 gradlew.bat
 📂 views
   📂 taplink
@@ -109,8 +112,8 @@
         📄 index.html
         📄 prerendered-routes.json
         📄 3rdpartylicenses.txt
+        📄 main-RQSQSYYJ.js
         📄 polyfills-5CFQRCPP.js
-        📄 main-E3JDCCVE.js
       📂 db
         📂 migration
           📄 V5__user_profile_and_session.sql
