@@ -37,4 +37,14 @@ export class LinkService {
   patchReorderLink(linkPositions: IReorderLink[]): Observable<void> {
     return this.apiClient.patch<void>(APIs.USER_LINKS.LINKS_REORDER, {linkPositions});
   }
+
+  // --- QR Code Methods Handled via Service ---
+  getQrCodeImage(id: number): Observable<Blob> {
+    return this.apiClient.get(APIs.USER_LINKS.GET_QR_CODE(id), { responseType: 'blob' });
+  }
+
+  updateQrConfig(id: number, payload: any): Observable<any> {
+    return this.apiClient.put<any>(APIs.USER_LINKS.GET_QR_CODE(id), payload);
+  }
+
 }

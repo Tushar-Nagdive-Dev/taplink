@@ -1,0 +1,161 @@
+<div class="max-w-5xl mx-auto space-y-6 fade-in-up pb-12">
+
+  <div class="p-8 rounded-3xl bg-white/80 backdrop-blur-xl border border-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+    <div class="space-y-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-bold text-xs uppercase tracking-wider">
+        <span>✨ Asset Studio</span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">QR Code Generator</h1>
+      <p class="text-slate-500 max-w-xl text-sm leading-relaxed">
+        Empower your marketing touchpoints. Generate high-resolution, branded QR codes linked directly to your active shortcuts. Customize types, error correction, colors, and logos instantly.
+      </p>
+    </div>
+
+    <button *ngIf="!selectedLink && !isAddingNew"
+            (click)="isAddingNew = true"
+            class="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 hover:scale-105 transition-all flex items-center gap-2 shrink-0">
+      <span class="text-xl">➕</span>
+      <span>Add New QR Code</span>
+    </button>
+  </div>
+
+  <div *ngIf="isAddingNew || !selectedLink" class="p-6 rounded-3xl bg-white/90 backdrop-blur-xl border border-white shadow-lg space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="font-bold text-slate-800 text-lg">Select a Saved Link to Generate QR</h3>
+      <button *ngIf="selectedLink" (click)="isAddingNew = false" class="text-xs font-bold text-slate-400 hover:text-slate-600">Cancel</button>
+    </div>
+
+    <div class="relative">
+      <input type="text"
+             [(ngModel)]="searchQuery"
+             (input)="filterLinks()"
+             (focus)="isDropdownOpen = true"
+             placeholder="Search by title, original URL or short code..."
+             class="w-full px-5 py-3 rounded-2xl border border-slate-200 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-slate-50/50" />
+
+      <div *ngIf="isDropdownOpen && filteredLinks.length > 0" class="absolute z-50 left-0 right-0 mt-2 bg-white rounded-2xl border border-slate-100 shadow-xl max-h-60 overflow-y-auto p-2">
+        <div *ngFor="let link of filteredLinks"
+             (click)="selectLink(link)"
+             class="p-3 hover:bg-blue-50 rounded-xl cursor-pointer transition-all flex items-center justify-between group">
+          <div>
+            <p class="font-bold text-slate-800 text-sm group-hover:text-blue-600">{{ link.title || 'Untitled Link' }}</p>
+            <p class="text-xs text-slate-400 truncate max-w-md">{{ link.originalUrl }}</p>
+          </div>
+          <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-mono font-semibold">/{{ link.shortCode }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectedLink && !isAddingNew" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <div class="lg:col-span-7 p-8 rounded-3xl bg-white/90 backdrop-blur-xl border border-white shadow-xl space-y-6">
+
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Active Link Target</span>
+          <h3 class="font-bold text-slate-900 text-base mt-0.5">{{ selectedLink.title || selectedLink.originalUrl }}</h3>
+        </div>
+        <button (click)="isAddingNew = true" class="text-xs font-bold text-blue-600 hover:underline bg-blue-50 px-3 py-1.5 rounded-lg">Change Link</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Code Format Type</label>
+          <select [(ngModel)]="codeType" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50/50 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+            <option value="QR_CODE">QR Code</option>
+            <option value="BARCODE_128">Barcode 128</option>
+            <option value="BARCODE_39">Barcode 39</option>
+            <option value="EAN_13">EAN-13</option>
+            <option value="UPC_A">UPC-A</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Error Correction</label>
+          <select [(ngModel)]="errorCorrection" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50/50 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+            <option value="LOW">Low (7%)</option>
+            <option value="MEDIUM">Medium (15%)</option>
+            <option value="QUARTILE">Quartile (25%)</option>
+            <option value="HIGH">High (30%)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Foreground Color</label>
+          <div class="flex items-center gap-3 p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
+            <input type="color" [(ngModel)]="foregroundColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent" />
+            <span class="text-xs font-mono font-bold text-slate-700">{{ foregroundColor }}</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Background Color</label>
+          <div class="flex items-center gap-3 p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
+            <input type="color" [(ngModel)]="backgroundColor" class="w-10 h-10 rounded-xl cursor-pointer border-0 bg-transparent" />
+            <span class="text-xs font-mono font-bold text-slate-700">{{ backgroundColor }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Size (Pixels)</label>
+          <input type="number" [(ngModel)]="size" min="150" max="1000" class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Margin Border</label>
+          <input type="number" [(ngModel)]="margin" min="0" max="5" class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-slate-700 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50" />
+        </div>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" [(ngModel)]="includeLogo" class="w-5 h-5 text-blue-600 rounded-lg border-slate-300 focus:ring-blue-500" />
+          <span class="text-sm font-bold text-slate-700">Include Center Brand Logo</span>
+        </label>
+
+        <div *ngIf="includeLogo">
+          <input type="text" [(ngModel)]="logoUrl" placeholder="https://yourdomain.com/logo.png" class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50" />
+        </div>
+      </div>
+
+      <button (click)="saveAndUpdateConfig()" class="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2">
+        <span>💾 Save & Generate Asset</span>
+      </button>
+    </div>
+
+    <div class="lg:col-span-5 p-8 rounded-3xl bg-white/90 backdrop-blur-xl border border-white shadow-xl flex flex-col items-center justify-center text-center">
+      <h3 class="font-extrabold text-slate-900 text-lg mb-6 self-start tracking-tight">Generated Preview Card</h3>
+
+      <div class="w-full p-8 bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-3xl border border-slate-100 flex flex-col items-center justify-center min-h-[360px] relative overflow-hidden shadow-inner">
+
+        <div *ngIf="isLoading" class="animate-pulse flex flex-col items-center gap-3 text-slate-400">
+          <div class="w-52 h-52 bg-slate-200 rounded-2xl"></div>
+          <p class="text-xs font-semibold">Building crisp vector pixels...</p>
+        </div>
+
+        <div *ngIf="!isLoading && qrImageBlobUrl" class="flex flex-col items-center gap-6 fade-in-up">
+          <div class="p-4 bg-white rounded-3xl shadow-xl border border-slate-100 transform hover:scale-105 transition-transform duration-300">
+            <img [src]="qrImageBlobUrl" alt="Generated Code Asset" class="w-52 h-52 object-contain" />
+          </div>
+
+          <a src="qrImageBlobUrl" [href]="qrImageBlobUrl" download="taplink-asset.png" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 flex items-center gap-2 text-sm">
+            <span>⬇️ Download High-Res PNG</span>
+          </a>
+        </div>
+
+        <div *ngIf="!isLoading && !qrImageBlobUrl" class="text-center text-slate-400 py-12">
+          <span class="text-4xl">🖼️</span>
+          <p class="mt-2 text-sm font-semibold">Click save to generate preview</p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

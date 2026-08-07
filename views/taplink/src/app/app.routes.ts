@@ -6,6 +6,7 @@ import {TaplinkDashboard} from './components/taplink-dashboard/taplink-dashboard
 import {AuthErrorComponent} from './components/auth/auth-error.component';
 import {authGuard} from './guards/auth.guard';
 import {LinkManager} from './components/link-manager/link-manager';
+import {QrCode} from './components/qr-code/qr-code';
 
 export const routes: Routes = [
     {
@@ -28,6 +29,7 @@ export const routes: Routes = [
         canActivateChild: [authGuard],
         children: [
           { path: 'links', component: LinkManager },
+          { path: 'qr', component: QrCode },
           { path: '', redirectTo: 'links', pathMatch: 'full'}
         ]
     },
