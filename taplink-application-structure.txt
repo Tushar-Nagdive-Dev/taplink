@@ -12,8 +12,12 @@
     📄 gradle-wrapper.properties
 📄 gradlew
 📂 logs
+  📄 application-2026-08-03.log
+  📄 application-2026-08-02.log
+  📄 database-2026-08-02.log
   📄 database.log
   📄 application.log
+📄 taplink-application-structure.txt
 📄 .env
 📄 CONTRIBUTING.md
 📄 gradlew.bat
@@ -106,6 +110,7 @@
   📂 main
     📂 resources
       📄 logback-spring.xml
+      📄 application-prod.yml
       📂 static
         📄 styles-GDFTD5EU.css
         📄 favicon.ico
