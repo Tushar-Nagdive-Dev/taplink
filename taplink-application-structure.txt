@@ -12,9 +12,6 @@
     📄 gradle-wrapper.properties
 📄 gradlew
 📂 logs
-  📄 application-2026-08-03.log
-  📄 application-2026-08-02.log
-  📄 database-2026-08-02.log
   📄 database.log
   📄 application.log
 📄 taplink-application-structure.txt
@@ -61,6 +58,7 @@
           📂 add-link-modal
           📂 auth
           📂 toast
+          📂 qr-code
           📂 taplink-dashboard
           📂 link-manager
           📂 user-profile
@@ -96,6 +94,9 @@
         📄 environment.qa.ts
       📄 main.server.ts
       📄 styles.scss
+      📂 assets
+        📂 certs
+          📂 dev
       📄 server.ts
       📄 proxy.conf.json
 📂 src
@@ -111,14 +112,18 @@
     📂 resources
       📄 logback-spring.xml
       📄 application-prod.yml
+      📂 certs
+        📂 dev
+          📄 dev-key.pem
+          📄 dev-cert.pem
       📂 static
-        📄 styles-GDFTD5EU.css
+        📄 main-HZDG6ZYR.js
         📄 favicon.ico
         📄 index.html
         📄 prerendered-routes.json
         📄 3rdpartylicenses.txt
-        📄 main-RQSQSYYJ.js
         📄 polyfills-5CFQRCPP.js
+        📄 styles-GTQZCUXP.css
       📂 db
         📂 migration
           📄 V5__user_profile_and_session.sql

@@ -39,7 +39,7 @@
              class="p-3 hover:bg-blue-50 rounded-xl cursor-pointer transition-all flex items-center justify-between group">
           <div>
             <p class="font-bold text-slate-800 text-sm group-hover:text-blue-600">{{ link.title || 'Untitled Link' }}</p>
-            <p class="text-xs text-slate-400 truncate max-w-md">{{ link.originalUrl }}</p>
+            <p class="text-xs text-slate-400 truncate max-w-md">{{ link.url }}</p>
           </div>
           <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-mono font-semibold">/{{ link.shortCode }}</span>
         </div>
@@ -54,7 +54,7 @@
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
           <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Active Link Target</span>
-          <h3 class="font-bold text-slate-900 text-base mt-0.5">{{ selectedLink.title || selectedLink.originalUrl }}</h3>
+          <h3 class="font-bold text-slate-900 text-base mt-0.5">{{ selectedLink.title || selectedLink.url }}</h3>
         </div>
         <button (click)="isAddingNew = true" class="text-xs font-bold text-blue-600 hover:underline bg-blue-50 px-3 py-1.5 rounded-lg">Change Link</button>
       </div>

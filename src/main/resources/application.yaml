@@ -1,5 +1,9 @@
 server:
-  port: 1005
+  port: 1093
+  ssl:
+    enabled: true
+    certificate: classpath:certs/dev/dev-cert.pem
+    certificate-private-key: classpath:certs/dev/dev-key.pem
 
 spring:
   application:

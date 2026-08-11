@@ -18,15 +18,15 @@ import {FormsModule} from '@angular/forms';
 export class QrCode implements OnInit{
 
   // States
-  allLinks: any[] = [];
-  filteredLinks: any[] = [];
+  allLinks: ILink[] = [];
+  filteredLinks: ILink[] = [];
   searchQuery: string = '';
   isDropdownOpen: boolean = false;
   isAddingNew: boolean = false;
   isLoading: boolean = false;
 
   // Selected Target Link & Configurations
-  selectedLink: any = null;
+  selectedLink: ILink | null = null;
   qrImageBlobUrl: string | null = null;
 
   // Form Configurations matching QrBarcodeConfig entity fields
@@ -48,11 +48,15 @@ export class QrCode implements OnInit{
   }
 
   fetchUserLinks() {
-    // Use your dedicated LinkService method
     this.linkService.getAllLinks().subscribe({
       next: (links) => {
         this.allLinks = links;
         this.filteredLinks = links;
+
+        // Automatically select the first link on load if links exist
+        if (links && links.length > 0) {
+          this.selectLink(links[0]);
+        }
       },
       error: (err) => console.error('Failed to load user links', err)
     });
@@ -63,7 +67,7 @@ export class QrCode implements OnInit{
     const query = this.searchQuery.toLowerCase();
     this.filteredLinks = this.allLinks.filter(link =>
       (link.title && link.title.toLowerCase().includes(query)) ||
-      (link.originalUrl && link.originalUrl.toLowerCase().includes(query)) ||
+      (link.url && link.url.toLowerCase().includes(query)) ||
       (link.shortCode && link.shortCode.toLowerCase().includes(query))
     );
   }
@@ -119,5 +123,4 @@ export class QrCode implements OnInit{
       }
     });
   }
-
 }

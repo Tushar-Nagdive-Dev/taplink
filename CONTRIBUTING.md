@@ -16,7 +16,7 @@ Thank you for your interest in contributing to **TapLink**! To ensure a smooth d
 ## 🚀 Running the Project Locally
 
 * **Full-Stack Development Mode (Recommended):**
-  Navigate to the Angular frontend directory (`views/taplink`) or run the root orchestration command to launch the Angular live-reload server (`http://localhost:4200`) alongside the Spring Boot dev backend (`http://localhost:1005`):
+  Navigate to the Angular frontend directory (`views/taplink`) or run the root orchestration command to launch the Angular live-reload server (`http://localhost:4200`) alongside the Spring Boot dev backend (`https://localhost:1093`):
   ```bash
   npm run start:all
     ````

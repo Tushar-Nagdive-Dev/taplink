@@ -28,7 +28,7 @@ public final class TapLinkAppMessages {
                                     <h1>Taplink Backend API Server</h1>
                                     <p>You are accessing the backend server directly on port <strong>1005</strong>.</p>
                                     <p>Direct UI access is disabled during local development. Please use the Angular development server instead.</p>
-                                    <a href="http://localhost:4200" class="btn">🚀 Open Angular Dev Server (Port 4200)</a>
+                                    <a href="https://localhost:4200" class="btn">🚀 Open Angular Dev Server (Port 4200)</a>
                                 </div>
                             </body>
                             </html>""";

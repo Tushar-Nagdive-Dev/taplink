@@ -81,7 +81,11 @@
               "buildTarget": "taplink:build:production"
             },
             "development": {
-              "buildTarget": "taplink:build:development"
+              "buildTarget": "taplink:build:development",
+              "ssl": true,
+              "sslKey": "src/assets/certs/dev/dev-key.pem",
+              "sslCert": "src/assets/certs/dev/dev-cert.pem",
+              "port": 4200
             }
           },
           "defaultConfiguration": "development"

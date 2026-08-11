@@ -49,17 +49,19 @@ public class QrBarcodeController {
     }
 
     /**
-     * Endpoint to update the visual configurations (colors, logo, size)
+     * Endpoint to update the visual configurations (colors, logo, size).
+     * Returns a simple success message to avoid circular JSON entity mapping errors.
      */
     @PutMapping("/{linkId}/qr")
-    public ResponseEntity<QrBarcodeConfig> updateQrConfig(
+    public ResponseEntity<String> updateQrConfig(
             @PathVariable("linkId") Long linkId,
             @RequestBody QrBarcodeConfig updatedConfig) {
 
         UserLinks link = this.userLinkRepository.findById(linkId)
                 .orElseThrow(() -> new RuntimeException(LINK_NOT_FOUND + linkId));
 
-        QrBarcodeConfig savedConfig = qrBarcodeService.saveOrUpdateConfig(link, updatedConfig);
-        return ResponseEntity.ok(savedConfig);
+        this.qrBarcodeService.saveOrUpdateConfig(link, updatedConfig);
+
+        return ResponseEntity.ok("Configuration updated successfully");
     }
 }

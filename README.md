@@ -49,7 +49,7 @@ npm run start:all
 * *What it does:* Concurrently launches the Angular live-reload development server on port `4200` via `ng serve` and fires up the Spring Boot backend in secure dev mode (`./gradlew runOnlyDev`) on port `1005`.
 
 
-* **About `runOnlyDev`:** This dedicated Gradle task (`./gradlew runOnlyDev`) injects the `taplink.mode=local-dev` property. It activates an intelligent safeguard that instantly blocks any accidental direct browser UI navigation to port `1005` (e.g., trying to visit `http://localhost:1005/signin`), presenting a clean developer redirect portal with a direct clickable link back to port `4200`. Meanwhile, API routes (`/api/**`) and Swagger (`/swagger-ui/**`) remain fully accessible for proxying.
+* **About `runOnlyDev`:** This dedicated Gradle task (`./gradlew runOnlyDev`) injects the `taplink.mode=local-dev` property. It activates an intelligent safeguard that instantly blocks any accidental direct browser UI navigation to port `1093` (e.g., trying to visit `https://localhost:1093/signin`), presenting a clean developer redirect portal with a direct clickable link back to port `4200`. Meanwhile, API routes (`/api/**`) and Swagger (`/swagger-ui/**`) remain fully accessible for proxying.
 
 ### 2. Production Build & Packaging
 
@@ -89,9 +89,9 @@ To clear old build artifacts, compiled Angular bundles from static folders, logs
 ## 🌐 Application URLs & Ports
 
 * **Angular Dev Server (Local Development UI):** `http://localhost:4200`
-* **Spring Boot API Server / Direct Access Dev Portal:** `http://localhost:1005`
-* **Swagger API Documentation:** `http://localhost:1005/swagger-ui/index.html`
-* **REST API Endpoints:** `http://localhost:1005/api/v1/...`
+* **Spring Boot API Server / Direct Access Dev Portal:** `https://localhost:1093`
+* **Swagger API Documentation:** `https://localhost:1093/swagger-ui/index.html`
+* **REST API Endpoints:** `https://localhost:1093/api/v1/...`
 
 ---
 
