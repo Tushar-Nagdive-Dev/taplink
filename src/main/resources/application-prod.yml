@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:1005}
+  port: ${PROD_PORT:1093}
 
 spring:
   datasource:
